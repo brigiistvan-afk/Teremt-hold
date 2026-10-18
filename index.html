@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teremtő Hold</title>
+<meta name="description" content="Manifesztációs vezető app – a csendből a szándékon át a lépésig, a hold ritmusában.">
+<meta name="theme-color" content="#140b24">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Teremtő Hold">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#140b24;--bg2:#1d1133;--card:#24163c;--card2:#2e1c4b;--card3:#382359;
+  --gold:#d9b25f;--gold2:#f3d58c;--gold3:#a8843a;
+  --text:#f4eeff;--muted:#bba9d8;--faint:#8b78ad;
+  --line:rgba(217,178,95,.22);--line2:rgba(187,169,216,.18);
+  --ok:#9fd8a9;--warn:#f0c27a;--r:20px;
+  --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+html.fs-l{font-size:20px} html.fs-xl{font-size:22px}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--text);font-family:'Mulish',system-ui,-apple-system,sans-serif;line-height:1.55;
+  background:radial-gradient(1200px 600px at 80% -10%,#3a1f62 0%,transparent 60%),radial-gradient(900px 500px at -10% 30%,#2a1548 0%,transparent 55%),var(--bg);background-attachment:fixed;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;color:var(--gold2);margin:0 0 .4rem;line-height:1.15}
+h1{font-size:2.1rem} h2{font-size:1.65rem} h3{font-size:1.3rem}
+p{margin:.3rem 0 .8rem}
+small,.small{font-size:.85rem;color:var(--muted)}
+.muted{color:var(--muted)}
+.gold{color:var(--gold2)}
+button{font:inherit;color:inherit;cursor:pointer}
+input,textarea,select{font:inherit;color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--line2);border-radius:14px;padding:.75rem .9rem;width:100%;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);background:rgba(255,255,255,.08)}
+textarea{min-height:110px;resize:vertical}
+label{display:block;font-weight:600;margin:.9rem 0 .35rem}
+::placeholder{color:var(--faint)}
+
+/* layout */
+#app{display:none;max-width:640px;margin:0 auto;padding:calc(var(--safe-t) + .6rem) 1rem calc(6.2rem + var(--safe-b))}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.4rem 0 .8rem}
+.brand{display:flex;align-items:center;gap:.55rem}
+.brand b{font-family:'Cormorant Garamond',serif;font-size:1.45rem;color:var(--gold2);font-weight:700;letter-spacing:.3px}
+.icon-btn{background:rgba(255,255,255,.06);border:1px solid var(--line2);border-radius:14px;width:46px;height:46px;display:grid;place-items:center}
+.icon-btn svg{width:24px;height:24px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(20,11,36,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:.4rem .3rem calc(.4rem + var(--safe-b))}
+nav.tabs .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.35rem 0;color:var(--faint);font-size:.74rem;font-weight:600}
+nav.tabs button svg{width:26px;height:26px}
+nav.tabs button.on{color:var(--gold2)}
+
+.card{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line2);border-radius:var(--r);padding:1.1rem 1.1rem;margin:0 0 1rem;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.card.gold{border-color:var(--line);background:linear-gradient(160deg,#3a2560,#24163c)}
+.card h3{margin-bottom:.3rem}
+.row{display:flex;align-items:center;gap:.7rem}
+.row.between{justify-content:space-between}
+.wrap{flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border:0;border-radius:16px;padding:.85rem 1.2rem;font-weight:700;background:linear-gradient(135deg,var(--gold2),var(--gold) 55%,var(--gold3));color:#2a1640;box-shadow:0 6px 18px rgba(217,178,95,.25);min-height:52px}
+.btn.block{width:100%}
+.btn.ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--line2);box-shadow:none}
+.btn.soft{background:rgba(217,178,95,.14);color:var(--gold2);border:1px solid var(--line);box-shadow:none}
+.btn.sm{min-height:42px;padding:.5rem .9rem;font-size:.92rem;border-radius:13px}
+.btn:disabled{opacity:.45}
+.pill{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .7rem;border-radius:999px;background:rgba(217,178,95,.14);border:1px solid var(--line);color:var(--gold2);font-size:.82rem;font-weight:700}
+.pill.muted{background:rgba(255,255,255,.05);border-color:var(--line2);color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.4rem 0}
+.chip{border:1px solid var(--line2);background:rgba(255,255,255,.04);border-radius:999px;padding:.55rem .95rem;font-weight:600;font-size:.95rem}
+.chip.on{background:rgba(217,178,95,.18);border-color:var(--gold);color:var(--gold2)}
+
+/* moon hero */
+.hero{display:flex;gap:1rem;align-items:center}
+.hero .moon{flex:0 0 auto}
+.hero .txt{flex:1}
+.hero .phase{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold2);font-weight:700;line-height:1.1}
+
+/* steps */
+.steps{display:flex;flex-direction:column;gap:.7rem}
+.step{display:flex;gap:.85rem;align-items:flex-start;padding:.95rem;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid var(--line2)}
+.step.done{border-color:rgba(159,216,169,.45);background:rgba(159,216,169,.07)}
+.step .n{flex:0 0 40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:rgba(217,178,95,.15);color:var(--gold2);border:1px solid var(--line)}
+.step.done .n{background:rgba(159,216,169,.2);color:var(--ok);border-color:rgba(159,216,169,.5)}
+.step .b{flex:1;min-width:0}
+.step .t{font-weight:700;font-size:1.05rem}
+.step .d{color:var(--muted);font-size:.92rem;margin:.1rem 0 .55rem}
+.check{display:flex;align-items:center;gap:.6rem;font-weight:600;cursor:pointer;margin:.3rem 0}
+.check input{width:26px;height:26px;accent-color:var(--gold)}
+
+.mood{display:flex;justify-content:space-between;gap:.35rem}
+.mood button{flex:1;border:1px solid var(--line2);background:rgba(255,255,255,.04);border-radius:14px;padding:.5rem 0;font-size:1.5rem}
+.mood button.on{border-color:var(--gold);background:rgba(217,178,95,.18)}
+
+.stat{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem}
+.stat div{background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:16px;padding:.8rem;text-align:center}
+.stat b{display:block;font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold2);line-height:1}
+
+.list-item{padding:.85rem 0;border-top:1px solid var(--line2)}
+.list-item:first-child{border-top:0}
+.tool{display:flex;gap:.85rem;align-items:center;text-align:left;width:100%;background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:18px;padding:.9rem;margin-bottom:.65rem}
+.tool .ic{flex:0 0 50px;height:50px;border-radius:15px;display:grid;place-items:center;background:rgba(217,178,95,.13);border:1px solid var(--line);font-size:1.5rem}
+.tool .t{font-weight:700}
+.tool .d{font-size:.88rem;color:var(--muted)}
+.sec-title{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:1.3rem 0 .6rem}
+.quote{font-family:'Cormorant Garamond',serif;font-size:1.35rem;line-height:1.35;color:var(--text);font-style:italic}
+.note{border-left:3px solid var(--gold);padding:.4rem .8rem;background:rgba(217,178,95,.07);border-radius:0 12px 12px 0;font-size:.92rem;color:var(--muted);margin:.6rem 0}
+.warn{border-left-color:var(--warn);color:#f6dfb8}
+.neg{margin-top:.45rem;font-size:.9rem;color:#f6dfb8;background:rgba(240,194,122,.1);border:1px solid rgba(240,194,122,.35);border-radius:12px;padding:.55rem .75rem;display:none}
+.neg.show{display:block}
+.prog{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold3),var(--gold2));border-radius:99px;transition:width .4s}
+.dots{display:flex;gap:.4rem;flex-wrap:wrap}
+.dots span{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--gold);display:inline-block}
+.dots span.on{background:var(--gold)}
+.empty{text-align:center;padding:1.4rem .6rem;color:var(--muted)}
+
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:50;display:none;background:rgba(10,5,20,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.sheet.open{display:block}
+.sheet .panel{position:absolute;left:0;right:0;bottom:0;top:calc(var(--safe-t) + 1.2rem);max-width:640px;margin:0 auto;background:linear-gradient(180deg,#2a1a47,#1a0f2e 40%);border:1px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;display:flex;flex-direction:column;animation:up .28s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet .head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.1rem .6rem;border-bottom:1px solid var(--line2)}
+.sheet .head h2{margin:0;font-size:1.5rem}
+.sheet .body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1rem 1.1rem calc(2rem + var(--safe-b));flex:1}
+
+/* csempék */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.tiles.t3{grid-template-columns:repeat(3,1fr);gap:.6rem}
+.tiles.t4{grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.8rem}
+.tiles.t2s{grid-template-columns:1fr 1fr;gap:.5rem}
+.tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:.5rem;min-height:128px;padding:1rem;border-radius:22px;text-align:left;background:linear-gradient(155deg,var(--card3),var(--card));border:1px solid var(--line2);box-shadow:0 8px 20px rgba(0,0,0,.22);transition:transform .12s;width:100%}
+.tile:active{transform:scale(.97)}
+.tile .ti{font-size:2rem;line-height:1}
+.tile .tb{display:flex;flex-direction:column;gap:.15rem}
+.tile .tt{font-weight:700;font-size:1.05rem;line-height:1.2}
+.tile .ts{font-size:.82rem;color:var(--muted);line-height:1.3}
+.tile.done{border-color:rgba(159,216,169,.55);background:linear-gradient(155deg,rgba(159,216,169,.2),var(--card))}
+.tile.done::after{content:'✓';position:absolute;top:.7rem;right:.8rem;width:28px;height:28px;border-radius:50%;background:var(--ok);color:#1d1133;display:grid;place-items:center;font-weight:800;font-size:.9rem}
+.tile.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0;gap:.9rem}
+.tile.wide .tb{flex:1}
+.tile .go{font-size:1.9rem;color:var(--gold2);line-height:1}
+.tile.hl{background:linear-gradient(140deg,#4d2d7c,#2b1a47);border-color:var(--line)}
+.tile.soft{background:rgba(255,255,255,.045)}
+.tile.sq{min-height:112px;padding:.75rem .4rem;gap:.25rem;align-items:center;text-align:center;justify-content:center}
+.tile.sq .tt{font-size:.92rem}.tile.sq .ts{font-size:.72rem}
+.tile.mini{min-height:76px;padding:.55rem .3rem;align-items:center;justify-content:center;text-align:center;gap:.25rem;border-radius:16px;box-shadow:none}
+.tile.mini .ti{font-size:1.4rem}.tile.mini .tt{font-size:.8rem}
+.tile.pick{border-color:var(--gold);background:rgba(217,178,95,.2)}
+.cal{display:grid;gap:.45rem}
+.cal.c6{grid-template-columns:repeat(6,1fr)}.cal.c7{grid-template-columns:repeat(7,1fr)}
+.cell{aspect-ratio:1/1;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0;position:relative}
+.cell b{font-size:.85rem}.cell span{font-size:.95rem}
+.cell.past{opacity:.55}
+.cell.ok{opacity:1;border-color:rgba(159,216,169,.6)}
+.cell.ok::after{content:'✓';position:absolute;top:1px;right:4px;font-size:.65rem;color:var(--ok);font-weight:800}
+.cell.now{border:2px solid var(--gold);background:rgba(217,178,95,.22);opacity:1}
+.mb{display:flex;flex-direction:column;align-items:center;padding:.6rem 0}
+.mb b{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold2)}.mb span{font-size:2.4rem;font-weight:700}
+input[type=range]{accent-color:var(--gold);padding:0;border:0;background:none}
+.rg{margin:.2rem 0}
+
+/* breath */
+.breath-wrap{display:grid;place-items:center;padding:1.2rem 0}
+.breath{width:230px;height:230px;border-radius:50%;display:grid;place-items:center;position:relative}
+.breath .ring{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(243,213,140,.55),rgba(217,178,95,.15) 60%,transparent 72%);transform:scale(.55);transition:transform 5s ease-in-out}
+.breath.in .ring{transform:scale(1)}
+.breath .lbl{position:relative;font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold2);font-weight:700}
+.timer{font-variant-numeric:tabular-nums;font-size:1.1rem;color:var(--muted);text-align:center}
+
+.narr{min-height:150px;display:grid;place-items:center;text-align:center;padding:1rem .4rem}
+.narr p{font-family:'Cormorant Garamond',serif;font-size:1.45rem;line-height:1.4;color:var(--text)}
+
+/* lock */
+#lock{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:1.4rem;background:radial-gradient(700px 500px at 50% 0%,#40236b,transparent 70%),var(--bg)}
+#lock .box{width:100%;max-width:420px;text-align:center}
+#lock .box .card{text-align:left}
+.err{color:#ffb4a8;font-size:.92rem;min-height:1.3em;margin-top:.5rem}
+
+/* onboarding */
+.ob{max-width:560px;margin:0 auto;padding:calc(var(--safe-t) + 1.4rem) 1.1rem 2rem}
+.route-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.route{border:1px solid var(--line2);background:rgba(255,255,255,.04);border-radius:18px;padding:1rem .8rem;text-align:left}
+.route .e{font-size:1.8rem}
+.route .n{font-weight:700;margin-top:.25rem}
+.route .s{font-size:.82rem;color:var(--muted)}
+.route.on{border-color:var(--gold);background:rgba(217,178,95,.14)}
+
+.vb{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.vb .it{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line2);background:rgba(255,255,255,.04);min-height:120px;display:flex;align-items:flex-end}
+.vb .it img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vb .it .cap{position:relative;width:100%;padding:.5rem .6rem;background:linear-gradient(transparent,rgba(10,5,20,.85));font-size:.88rem;font-weight:600}
+.vb .it .k{position:absolute;top:.4rem;left:.4rem;z-index:2}
+.vb .it .x{position:absolute;top:.35rem;right:.35rem;z-index:2;background:rgba(0,0,0,.5);border:0;border-radius:50%;width:30px;height:30px;color:#fff}
+
+#toast{position:fixed;left:50%;bottom:calc(6.5rem + var(--safe-b));transform:translateX(-50%) translateY(20px);background:#3b2660;border:1px solid var(--line);color:var(--text);padding:.7rem 1.1rem;border-radius:14px;z-index:200;opacity:0;transition:.3s;pointer-events:none;max-width:90vw;text-align:center;font-weight:600}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.hide{display:none!important}
+hr.s{border:0;border-top:1px solid var(--line2);margin:1rem 0}
+details summary{cursor:pointer;font-weight:700;color:var(--gold2)}
+</style>
+</head>
+<body>
+
+<!-- ZÁRÓKÉPERNYŐ -->
+<div id="lock">
+  <div class="box">
+    <div id="lockMoon" style="display:grid;place-items:center;margin-bottom:.6rem"></div>
+    <h1>Teremtő Hold</h1>
+    <p class="muted">A csendből a szándékon át a lépésig – a hold ritmusában.</p>
+    <div class="card gold">
+      <label for="lkName" style="margin-top:0">Keresztneved</label>
+      <input id="lkName" autocomplete="given-name" autocorrect="off" spellcheck="false" placeholder="pl. Anna">
+      <label for="lkCode">Hozzáférési kód</label>
+      <input id="lkCode" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="characters" placeholder="A vásárláskor kapott kód">
+      <div class="err" id="lkErr"></div>
+      <button class="btn block" id="lkBtn" style="margin-top:.6rem">Belépés</button>
+      <p class="small" style="margin-top:.9rem;text-align:center">Az appot az <span class="gold">aranyhold.hu</span> oldalon tudod megvásárolni.</p>
+    </div>
+  </div>
+</div>
+
+<!-- BEVEZETŐ -->
+<div id="onboard" class="hide"></div>
+
+<!-- APP -->
+<div id="app">
+  <header class="top">
+    <div class="brand"><span id="hdrMoon"></span><b>Teremtő Hold</b></div>
+    <button class="icon-btn" id="btnSettings" aria-label="Beállítások">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f3d58c" stroke-width="1.7"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+  <main id="view"></main>
+</div>
+
+<nav class="tabs hide" id="tabs">
+  <div class="in">
+    <button data-tab="ma" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>Ma</button>
+    <button data-tab="szandek"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l2.4 5.6 6 .5-4.6 4 1.4 5.9L12 16l-5.2 3 1.4-5.9-4.6-4 6-.5z"/></svg>Szándékok</button>
+    <button data-tab="program"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17"/><path d="M12 7.5v4.5l3 2"/></svg>Program</button>
+    <button data-tab="eszkoz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>Eszköztár</button>
+    <button data-tab="utam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20c3-6 5-9 8-9s5 3 8-7"/><circle cx="4" cy="20" r="1.4"/><circle cx="20" cy="4" r="1.4"/></svg>Utam</button>
+  </div>
+</nav>
+
+<div class="sheet" id="sheet"><div class="panel"><div class="head"><h2 id="shTitle"></h2><button class="icon-btn" id="shClose" aria-label="Bezárás"><svg viewBox="0 0 24 24" fill="none" stroke="#f3d58c" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="body" id="shBody"></div></div></div>
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   KONFIGURÁCIÓ – itt állítható a név, a zárolás és a kódok
+   ========================================================= */
+const CONFIG = {
+  APP_NAME: 'Teremtő Hold',
+  LOCK_ENABLED: true,
+  SALT: 'TEREMTO-HOLD-2026',
+  // SHA-256( keresztnév kisbetűvel :: KÓD nagybetűvel :: SALT )
+  // Teszt belépés: Teszt / HOLD2026  (élesítés előtt törölhető)
+  BH_VALID_HASHES: [
+    '28eecbbe099b2788e1952fe0ea1486cd3138128c8433e01c70e1ec46eba11f13'
+  ]
+};
+
+/* ---------- segédek ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const pad = n => String(n).padStart(2,'0');
+const dKey = (d=new Date()) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const HONAP = ['január','február','március','április','május','június','július','augusztus','szeptember','október','november','december'];
+const NAP = ['vasárnap','hétfő','kedd','szerda','csütörtök','péntek','szombat'];
+const fmtDate = key => { const [y,m,d] = key.split('-').map(Number); const dt = new Date(y,m-1,d); return `${y}. ${HONAP[m-1]} ${d}., ${NAP[dt.getDay()]}`; };
+const fmtShort = key => { const [y,m,d] = key.split('-').map(Number); return `${HONAP[m-1].slice(0,3)}. ${d}.`; };
+const addDays = (key, n) => { const [y,m,d] = key.split('-').map(Number); return dKey(new Date(y,m-1,d+n)); };
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2400); }
+
+/* ---------- tárolás (védett: ha a böngésző tiltja, memóriában fut) ---------- */
+const MEM = {};
+const LS = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return MEM[k] ?? null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ if(e && /quota/i.test(e.name||'')) throw e; MEM[k]=String(v); return true; } },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} delete MEM[k]; }
+};
+const KEY = 'th_state_v1';
+const DEF = () => ({
+  profile:{name:'',route:'',onboarded:false,start:dKey()},
+  mainId:null, intentions:[], days:{}, journal:[], vision:[],
+  m369:{}, m55:null,
+  settings:{voice:true, rate:0.9, sound:true, fs:''}
+});
+let S = load();
+function load(){ try{ const s = JSON.parse(LS.get(KEY)); if(s && s.profile) return Object.assign(DEF(), s); }catch(e){} return DEF(); }
+function save(){ try{ LS.set(KEY, JSON.stringify(S)); return true; }catch(e){ toast('A tárhely megtelt – törölj egy képet a vision boardról.'); return false; } }
+function day(key=dKey()){ if(!S.days[key]) S.days[key] = {steps:{}, hala:[], mood:0}; return S.days[key]; }
+function mark(step){ const d = day(); if(!d.steps[step]){ d.steps[step]=true; save(); } }
+function addJournal(type, title, text, extra={}){ S.journal.unshift({id:uid(), date:dKey(), ts:Date.now(), type, title, text, ...extra}); save(); }
+const mainInt = () => S.intentions.find(i => i.id === S.mainId) || S.intentions.find(i => i.status==='aktiv') || null;
+const activeInts = () => S.intentions.filter(i => i.status === 'aktiv');
+
+/* ---------- holdfázis ---------- */
+const SYN = 29.530588853;
+function moon(date=new Date()){
+  const jd = date.getTime()/86400000 + 2440587.5;
+  let age = ((jd - 2451550.1) / SYN) % 1; if(age<0) age+=1; age *= SYN;
+  const illum = (1 - Math.cos(2*Math.PI*age/SYN))/2;
+  let key, name;
+  if(age < 1.85){key='uj';name='Újhold';}
+  else if(age < 5.54){key='novsarlo';name='Növő sarló';}
+  else if(age < 9.23){key='elsonegyed';name='Első negyed';}
+  else if(age < 12.92){key='novdom';name='Növő hold';}
+  else if(age < 16.61){key='teli';name='Telihold';}
+  else if(age < 20.30){key='fogydom';name='Fogyó hold';}
+  else if(age < 23.99){key='utolsonegyed';name='Utolsó negyed';}
+  else if(age < 27.68){key='fogysarlo';name='Fogyó sarló';}
+  else {key='uj';name='Újhold';}
+  return {age, illum, key, name, dayIdx: Math.min(29, Math.floor(age))};
+}
+const PHASE_TXT = {
+  uj:'A csend és a tiszta lap ideje. Szándékot állítasz.',
+  novsarlo:'Az első lépések ideje. Kicsi, bátor mozdulatok.',
+  elsonegyed:'A döntés ideje. Szembenézel a belső akadállyal.',
+  novdom:'A finomhangolás ideje. Kitartás és figyelem.',
+  teli:'A hála és az ünneplés ideje. Elengeded, ami nehéz.',
+  fogydom:'Az adás és a revízió ideje. Megosztod, amit kapsz.',
+  utolsonegyed:'A rendrakás ideje. Helyet készítesz az újnak.',
+  fogysarlo:'A pihenés ideje. Befelé figyelsz, gyűjtöd az erőt.'
+};
+function moonPath(age, size){
+  const r = size/2 - 2, c = size/2, p = age/SYN;
+  const k = Math.cos(2*Math.PI*p) * r, waxing = p < .5;
+  const sweepOuter = waxing ? 1 : 0, ex = Math.abs(k);
+  const sweepInner = (waxing ? (k>0) : (k<0)) ? 0 : 1;
+  return `M${c} ${c-r} A${r} ${r} 0 0 ${sweepOuter} ${c} ${c+r} A${ex} ${r} 0 0 ${sweepInner} ${c} ${c-r}Z`;
+}
+function moonSVG(age, size=64){
+  const r = size/2 - 2, c = size/2;
+  const lit = '#f3d58c', dark = '#2b1b46';
+  const d = moonPath(age, size);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><defs><radialGradient id="mg${size}" cx="40%" cy="35%"><stop offset="0" stop-color="#fff3cf"/><stop offset="1" stop-color="${lit}"/></radialGradient></defs><circle cx="${c}" cy="${c}" r="${r}" fill="${dark}" stroke="rgba(243,213,140,.35)" stroke-width="1"/><path d="${d}" fill="url(#mg${size})"/></svg>`;
+}
+
+/* ---------- negáció-szűrő ---------- */
+const NEG = ['nem','ne','soha','sosem','semmi','semmit','semmilyen','nincs','nincsen','nincsenek','nélkül','többé','se','sem','ne legyen','elkerül','elkerülni','abbahagy','abbahagyni','megszabadul','megszabadulni','kevesebb'];
+function negWords(text){ const toks = String(text||'').toLowerCase().split(/[^\p{L}]+/u).filter(Boolean); const hits = [...new Set(toks.filter(t => NEG.includes(t)))]; return hits; }
+function negBox(id){ return `<div class="neg" id="${id}"></div>`; }
+function wireNeg(inputId, boxId){
+  const el = $('#'+inputId), box = $('#'+boxId); if(!el||!box) return;
+  const run = () => { const h = negWords(el.value); if(h.length){ box.innerHTML = `A tudatalatti a tagadást kevésbé dolgozza fel. Ezeket a szavakat találtam: <b>${h.map(esc).join(', ')}</b>. Fogalmazd meg azt, amit <b>szeretnél</b>. Pl. „nem akarok fáradt lenni” → „energikusan ébredek”.`; box.classList.add('show'); } else box.classList.remove('show'); };
+  el.addEventListener('input', run); run();
+}
+
+/* ---------- útvonalak ---------- */
+const ROUTES = {
+  penz:{n:'Bőség és pénz', e:'🪙', s:'biztonság, szabadság',
+    why:['Biztonság','Szabadság','Adni tudok','Nyugalom','Választási lehetőség','Megbecsülés'],
+    ex:{wish:'Havonta stabil, bőséges bevételem van a saját munkámból.', outcome:'Ránézek a hónap végén a számlámra, mosolygok, és nyugodtan tervezem a következő hónapot.', obstacle:'Ha a pénzre gondolok, összeszorul a gyomrom, és halogatom a számolást.', ha:'hétfő reggel lefőzöm a kávémat', akkor:'15 percig átnézem a heti bevételi tervemet', aff:'Bőség és biztonság áramlik az életembe.', sats:'A barátnőm azt mondja: „Úgy örülök, hogy ilyen jól megy a vállalkozásod!”'},
+    ut:'Látod magad, ahogy nyugodt, tiszta fejjel foglalkozol a pénzügyeiddel. Kinyitod a táblázatot, és kíváncsisággal nézed a számokat.',
+    veg:'Érzed a biztonságot a mellkasodban. Könnyű a vállad. Látod, ahogy örömmel adsz valakinek abból, ami a tiéd.',
+    q:['Mi kellene ahhoz, hogy a pénz még könnyebben és örömtelibben érkezzen hozzám?','Hogyan lehetne ennél is jobb a pénzzel való kapcsolatom?','Milyen új bevételi lehetőség kezd most megmutatkozni?','Mit választhatok ma, ami tágítja a bőséget az életemben?','Ki az, akinek a tudásom értéket ad?'],
+    note:'Nagy pénzügyi döntés előtt kérd ki szakértő véleményét. A szándék és a pontos számolás együtt a legerősebb.'},
+  szerelem:{n:'Szerelem és kapcsolatok', e:'💞', s:'kapcsolódás, öröm',
+    why:['Kapcsolódás','Biztonság','Öröm','Gyengédség','Közös növekedés','Szabadság a kapcsolatban'],
+    ex:{wish:'Szeretetteljes, kölcsönös, egymást tisztelő kapcsolatban élek.', outcome:'Egy vasárnap reggel nevetve készítjük együtt a reggelit, és béke van bennem.', obstacle:'Félek megmutatni magam, ezért visszahúzódom.', ha:'valaki kedvesen közeledik felém', akkor:'mosolygok és nyitott kérdést teszek fel', aff:'Szeretetet adok és szeretetet fogadok be.', sats:'Valaki megfogja a kezem, és azt mondja: „Jó, hogy itt vagy.”'},
+    ut:'Látod magad, ahogy nyitottan, kíváncsian beszélgetsz valakivel. Érzed a melegséget, ami a szívedből árad.',
+    veg:'Érzed egy szeretett ember jelenlétét magad mellett. Biztonságban vagy, önmagad lehetsz. Halld a nevetést.',
+    q:['Mi kellene ahhoz, hogy még több szeretetet tudjak befogadni?','Hogyan tudnék ma kedvesebb lenni önmagamhoz?','Milyen kapcsolat illik ahhoz, aki valójában vagyok?','Hol érzem már most a szeretetet az életemben?','Mit adhatok ma egy kapcsolatomnak, ami örömet hoz?'],
+    note:'Ez az útvonal a kapcsolat minőségére fókuszál. Mindenki szabad akarata tiszteletben marad – a saját szívedet hangolod.'},
+  hivatas:{n:'Hivatás és alkotás', e:'✨', s:'kiteljesedés, hozzájárulás',
+    why:['Kiteljesedés','Alkotás öröme','Hozzájárulás','Szakmai növekedés','Elismerés','Függetlenség'],
+    ex:{wish:'Olyan munkát végzek, ami lelkesít, és mások életét is jobbá teszi.', outcome:'Megkapom egy ügyfelem üzenetét, hogy a munkám mennyit segített neki, és melegség árad szét bennem.', obstacle:'Halogatom a láthatóvá válást, mert tartok a kritikától.', ha:'reggel 9-kor leülök az asztalomhoz', akkor:'20 percig az első lépésen dolgozom, a telefont félretéve', aff:'Bátran megmutatom, amit alkotok.', sats:'Egy kolléga kezet ráz velem: „Gratulálok, ez nagyszerű lett!”'},
+    ut:'Látod magad, ahogy leülsz dolgozni, és elkezded az első, kis lépést. Érzed, ahogy a figyelmed elmélyül.',
+    veg:'Látod a kész munkát magad előtt. Érzed a büszkeséget és a hálát. Valaki megköszöni, amit adtál.',
+    q:['Mi kellene ahhoz, hogy a munkám még több örömet hozzon nekem és másoknak?','Mi az a legkisebb lépés, ami ma könnyű?','Milyen tehetségem vár arra, hogy megmutassam?','Kinek az életét teszi jobbá, amit alkotok?','Hogyan lehetne ez még könnyebb?'],
+    note:'Itt az út képzelése különösen erős: a kutatások szerint aki a folyamatot is elképzeli, az többet halad.'},
+  egeszseg:{n:'Egészség és vitalitás', e:'🌿', s:'energia, jelenlét',
+    why:['Energia','Jelenlét a testben','Könnyedség','Erő','Hosszú, aktív élet','Önbecsülés'],
+    ex:{wish:'Energikusan ébredek, és jól érzem magam a testemben.', outcome:'Reggel kilépek a friss levegőre, mélyet lélegzem, és érzem az erőt a lábaimban.', obstacle:'Fáradtan türelmetlen leszek magammal, és feladom.', ha:'ebéd után felállok az asztaltól', akkor:'10 percet sétálok a friss levegőn', aff:'A testem erős, és szeretettel gondoskodom róla.', sats:'Valaki rám néz és azt mondja: „Ragyogsz, olyan friss vagy!”'},
+    ut:'Látod magad, ahogy felállsz, kinyújtózol, és elindulsz egy rövid sétára. Érzed a levegőt a bőrödön.',
+    veg:'Érzed az energiát, ami átjárja a testedet. Könnyű a mozgásod. Hálás vagy a testednek mindenért, amit érted tesz.',
+    q:['Mi kellene ahhoz, hogy a testem még több energiát kapjon?','Mire vágyik ma a testem?','Hogyan tudnék még gyengédebben gondoskodni magamról?','Mi az a kis mozdulat, ami ma jólesik?','Mikor érzem magam a legelevenebbnek?'],
+    note:'Ez az útvonal önismereti, kiegészítő gyakorlat. Orvosi kezelés mellé ajánlott, egészségügyi kérdésben mindig a szakemberé az utolsó szó.'},
+  onertek:{n:'Önértékelés és önszeretet', e:'🌸', s:'önelfogadás, belső béke',
+    why:['Önelfogadás','Belső béke','Bátorság','Hitelesség','Könnyedség','Önbizalom'],
+    ex:{wish:'Szeretettel és elfogadással fordulok önmagam felé.', outcome:'Belenézek a tükörbe, és kedvesen, őszintén rám mosolygok.', obstacle:'A belső kritikus hangom hamarabb szólal meg, mint a kedves.', ha:'észreveszem a kritikus hangot', akkor:'megkérdezem: mit mondanék most egy barátomnak?', aff:'Értékes vagyok, úgy, ahogy vagyok.', sats:'A legjobb barátom átölel: „Annyira büszke vagyok rád.”'},
+    ut:'Látod magad, ahogy egy nehéz pillanatban megállsz, és kedves szavakkal fordulsz magadhoz.',
+    veg:'Érzed a meleg, nyugodt elfogadást a mellkasodban. Egyenes a hátad. Önmagad vagy, és ez elég.',
+    q:['Mi kellene ahhoz, hogy még több szeretetet adjak önmagamnak?','Mit csináltam ma jól?','Milyen erősségem segített már sokszor?','Hogyan beszélnék magammal, ha a legjobb barátom lennék?','Mi lehetséges, ha elhiszem, hogy értékes vagyok?'],
+    note:'Itt különösen fontos az affirmáció-létra: azt a fokot válaszd, ami most hihető számodra. Az apró, igaz lépések erősebbek a nagy ugrásnál.'},
+  otthon:{n:'Otthon és család', e:'🏡', s:'harmónia, valahová tartozás',
+    why:['Harmónia','Valahová tartozás','Biztonság','Közös öröm','Nyugalom','Gondoskodás'],
+    ex:{wish:'Az otthonunk békés, meleg hely, ahol mindenki jól érzi magát.', outcome:'Este együtt ülünk az asztalnál, nevetünk, és mindenki elmondja a napja legszebb pillanatát.', obstacle:'Fáradtan mindent egyedül akarok kontrollálni.', ha:'vacsorához ülünk', akkor:'mindenki mond egy jót a napjáról, velem kezdve', aff:'Az otthonunk a béke és a szeretet helye.', sats:'A gyermekem azt mondja: „Imádok itthon lenni.”'},
+    ut:'Látod magad, ahogy belépsz az otthonodba, és egy apró gesztussal megteremted a nyugalmat: gyertyát gyújtasz, zenét kapcsolsz.',
+    veg:'Érzed az otthon melegét. Halld a szeretteid hangját. Béke van a szívedben.',
+    q:['Mi kellene ahhoz, hogy az otthonunk még harmonikusabb legyen?','Mit tehetek ma, ami örömet visz a családomba?','Hol tudok segítséget kérni és elfogadni?','Milyen közös rituálé hozna közelebb minket?','Hogyan lehetne ma minden egy kicsit könnyebb?'],
+    note:'A család minden tagjának megvan a saját útja. Te a saját jelenléteddel és döntéseiddel teremted a harmóniát.'}
+};
+const GEN_Q = ['Mi minden lehetséges még, ami most kezd megmutatkozni?','Hogyan lehetne ennél is jobb?','Mi az, ami most könnyű?','Mit választhatok ma, ami tágítja az életem?','Milyen ajándék rejlik ebben a helyzetben?'];
+
+/* ---------- vezetett program ---------- */
+const MOON_PROG = [
+ {t:'Csend és tiszta lap',d:'Végezz 3 perc Csend-légzést. Utána írd le egy mondatban, mit szeretnél ebben a holdciklusban teremteni.',tool:'breath'},
+ {t:'Szándékállítás',d:'Töltsd ki a Szándék-varázslót. Egy fő szándék elég – a fókusz erőt ad.',tool:'wizard'},
+ {t:'Az első lépés',d:'Nézd meg a ha-akkor terved, és tedd meg ma az első, legkisebb lépést.',tool:'today'},
+ {t:'Átélés',d:'Végezd el a vezetett Átélést. Figyeld meg, mit érzel a testedben a teljesült pillanatban.',tool:'visual'},
+ {t:'A legjobb önmagam',d:'Írj 10 percig arról, milyen az életed, amikor a szándékod már valóság. Múlt időben, mintha már megtörtént volna.',tool:'scripting'},
+ {t:'Nyitott kérdések',d:'Járd végig a Kérdés-utat. A kérdés kinyitja a figyelmet az új lehetőségekre.',tool:'kerdesut'},
+ {t:'A belső hang',d:'Mi az a gondolat, ami ilyenkor megszólal benned? Írd le, majd írj mellé egy kedves ha-akkor választ.',tool:'note',p:'Amikor a szándékomra gondolok, ezt mondja a belső hangom… És ha legközelebb megszólal, akkor ezt teszem…'},
+ {t:'Bátor döntés',d:'Válassz egy dolgot, amit ma egy fokkal bátrabban teszel. Írd le, hogyan sikerült.',tool:'note',p:'Ma ezt tettem bátrabban:'},
+ {t:'Affirmáció-létra',d:'Nézd meg a létrádat. Ha a következő fok már hihető, lépj feljebb.',tool:'ladder'},
+ {t:'Az út képe',d:'Végezd el az Átélést, és most különösen a holnapi lépésedet képzeld el részletesen: hol, mikor, hogyan.',tool:'visual'},
+ {t:'369-es nap',d:'Próbáld ki ma a 369-es írást: reggel 3-szor, délután 6-szor, este 9-szer.',tool:'m369'},
+ {t:'Jelek napja',d:'Figyeld ma a lehetőségeket, a véletleneket, a jó híreket. Jegyezz fel legalább egyet.',tool:'signs'},
+ {t:'Vision board',d:'Tegyél fel egy képet a célról és egyet az útról. Mindkettő kell.',tool:'vision'},
+ {t:'Mi mozdult már?',d:'Nézd át a jelek naplóját. Mi változott a ciklus eleje óta?',tool:'signs'},
+ {t:'Telihold-hála',d:'Írj 5 dolgot, amiért hálás vagy ebben a ciklusban – nagyot és apróságot is.',tool:'gratitude'},
+ {t:'Elengedés',d:'Írd le, mit engedsz most el: egy hiedelmet, szokást vagy félelmet. Majd írd le, mi lép a helyére.',tool:'note',p:'Most elengedem… A helyére ez érkezik…'},
+ {t:'Ünneplés',d:'Ünnepeld meg a legkisebb eredményt is. Mondd ki hangosan, és írd le.',tool:'note',p:'Ma ezt ünneplem:'},
+ {t:'Revízió',d:'Válassz egy nehezebb pillanatot a hétből, és írd újra képzeletben úgy, ahogy szeretted volna.',tool:'revision'},
+ {t:'Esti jelenet',d:'Készítsd el az esti jelenetedet, és hallgasd meg elalvás előtt.',tool:'sats'},
+ {t:'Adni',d:'Adj ma valamit abból, amit kérsz: időt, figyelmet, segítséget, egy kedves szót.',tool:'note',p:'Ma ezt adtam:'},
+ {t:'Finomhangolás',d:'Nézd át a ha-akkor terved. Mi működik? Min változtatsz?',tool:'wizardEdit'},
+ {t:'Rendrakás',d:'Tegyél rendbe egy kis teret magad körül. Helyet készítesz az újnak.',tool:'note',p:'Ma ezt tettem rendbe:'},
+ {t:'Kérdés-út',d:'Járd végig a Kérdés-utat: könnyű vagy nehéz, kié ez a gondolat, oldás, testi horgony.',tool:'kerdesut'},
+ {t:'Revízió',d:'Írj újra egy pillanatot, ami még benned van. Figyeld, hogyan változik a testérzet.',tool:'revision'},
+ {t:'Pihenés',d:'Ma elég az 5 perces Csend-légzés. A pihenés is a teremtés része.',tool:'breath'},
+ {t:'Hála önmagadnak',d:'Írj 3 dolgot, amit ebben a ciklusban jól csináltál.',tool:'gratitude'},
+ {t:'Ciklus-összegzés',d:'Mi volt a ciklus legfontosabb tanulsága? Mit viszel tovább?',tool:'note',p:'Ebben a ciklusban azt tanultam…'},
+ {t:'Esti jelenet',d:'Hallgasd meg újra az esti jelenetedet elalvás előtt.',tool:'sats'},
+ {t:'Csend az újhold előtt',d:'3 perc Csend-légzés. Engedd, hogy kiürüljön a fejed.',tool:'breath'},
+ {t:'Új ciklus küszöbén',d:'Melyik szándék visz tovább? Frissítsd, vagy állíts újat.',tool:'wizardEdit'}
+];
+const WEEK_PROG = [
+ {t:'Ismerkedés a csenddel',d:'3 perc Csend-légzés: 5 másodperc be, 5 másodperc ki. Ez a gyakorlat minden további alapja.',tool:'breath'},
+ {t:'Az első szándék',d:'A Szándék-varázsló végigvezet: vágy, miért, legszebb pillanat, belső akadály, ha-akkor terv.',tool:'wizard'},
+ {t:'Átélés',d:'Az első vezetett Átélés: előbb az utat, aztán a teljesült pillanatot éled át.',tool:'visual'},
+ {t:'Az első lépés',d:'Tedd meg ma a ha-akkor terved lépését, és pipáld ki a Ma fülön.',tool:'today'},
+ {t:'Hála',d:'Írj 3–5 dolgot, amiért ma hálás vagy. A hála a manifesztáció érzelmi motorja.',tool:'gratitude'},
+ {t:'Esti jelenet',d:'Készíts egy rövid jelenetet, ami azt jelzi, hogy a szándékod megvalósult, és hallgasd meg elalvás előtt.',tool:'sats'},
+ {t:'Visszatekintés',d:'Mit vettél észre ezen a héten? Mi változott benned?',tool:'note',p:'Ezen a héten azt vettem észre…'}
+];
+
+/* ---------- hang: felolvasás, csengő, háttér ---------- */
+const TTS = {
+  synth: window.speechSynthesis || null, voice:null, timer:null, cancelled:false,
+  init(){ if(!this.synth) return; const pick = () => { const vs = this.synth.getVoices(); this.voice = vs.find(v => /hu/i.test(v.lang) && /google|natural|premium|enhanced/i.test(v.name)) || vs.find(v => /hu/i.test(v.lang)) || null; }; pick(); this.synth.onvoiceschanged = pick; },
+  has(){ return !!(this.synth && S.settings.voice); },
+  stop(){ this.cancelled = true; clearTimeout(this.timer); if(this.synth) this.synth.cancel(); },
+  run(segs, onStep, onEnd){
+    this.stop(); this.cancelled = false; let i = 0;
+    const next = () => {
+      if(this.cancelled) return;
+      if(i >= segs.length){ onEnd && onEnd(); return; }
+      const s = segs[i]; onStep && onStep(i, s);
+      const after = () => { if(this.cancelled) return; this.timer = setTimeout(() => { i++; next(); }, (s.p||2)*1000); };
+      if(this.has()){
+        const u = new SpeechSynthesisUtterance(s.t); u.lang = 'hu-HU'; if(this.voice) u.voice = this.voice; u.rate = S.settings.rate || .9; u.pitch = 1;
+        u.onend = after; u.onerror = after; this.synth.speak(u);
+      } else { this.timer = setTimeout(after, Math.max(2500, s.t.length * 65)); }
+    };
+    next();
+  }
+};
+let AC = null;
+function ac(){ if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC && AC.state==='suspended') AC.resume(); return AC; }
+function chime(){
+  const a = ac(); if(!a) return; const t = a.currentTime;
+  [528, 792, 1056].forEach((f, i) => { const o = a.createOscillator(), g = a.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18/(i+1), t+0.02); g.gain.exponentialRampToValueAtTime(0.0001, t+3.2); o.connect(g).connect(a.destination); o.start(t); o.stop(t+3.3); });
+}
+const DRONE = { nodes:null,
+  start(){ if(!S.settings.sound || this.nodes) return; const a = ac(); if(!a) return; const g = a.createGain(); g.gain.value = 0; const lp = a.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=600; const os = [110, 164.81, 220.5].map((f,i) => { const o = a.createOscillator(); o.type = i===2?'triangle':'sine'; o.frequency.value=f; o.connect(lp); o.start(); return o; }); lp.connect(g).connect(a.destination); g.gain.linearRampToValueAtTime(0.045, a.currentTime+3); this.nodes={g,os}; },
+  stop(){ if(!this.nodes||!AC) return; const {g,os} = this.nodes; g.gain.linearRampToValueAtTime(0, AC.currentTime+1.5); setTimeout(()=>os.forEach(o=>{try{o.stop()}catch(e){}}),1700); this.nodes=null; }
+};
+
+/* ---------- széria (rugalmas: egy kihagyott nap belefér) ---------- */
+function active(key){ const d = S.days[key]; return !!(d && (Object.values(d.steps||{}).some(Boolean) || (d.hala||[]).length)); }
+function streak(){
+  let key = dKey(), n = 0, gap = 0;
+  if(!active(key)) key = addDays(key, -1);
+  for(let i=0;i<400;i++){
+    if(active(key)){ n++; gap = 0; }
+    else { gap++; if(gap >= 2) break; }
+    key = addDays(key, -1);
+  }
+  return n;
+}
+
+/* =========================================================
+   NÉZETEK
+   ========================================================= */
+let TAB = 'ma';
+function go(tab){ TAB = tab; $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab===tab)); render(); window.scrollTo({top:0}); }
+function render(){
+  const m = moon(); $('#hdrMoon').innerHTML = moonSVG(m.age, 34);
+  const v = $('#view');
+  if(TAB==='ma') v.innerHTML = vToday();
+  else if(TAB==='szandek') v.innerHTML = vIntentions();
+  else if(TAB==='program') v.innerHTML = vProgram();
+  else if(TAB==='eszkoz') v.innerHTML = vTools();
+  else v.innerHTML = vJourney();
+  wireView();
+}
+
+function greet(){ const h = new Date().getHours(); return h<10?'Szép reggelt':h<18?'Szép napot':'Szép estét'; }
+const TOOL_IC = {breath:'🌬️',wizard:'⭐',wizardEdit:'⭐',visual:'🌕',scripting:'🖋️',questions:'❔',kerdesut:'🗝️',note:'📓',ladder:'🪜',m369:'3️⃣',signs:'🔆',vision:'🖼️',gratitude:'🙏',revision:'🔁',sats:'🌙',today:'👣',bars:'🤲',sos:'🤍'};
+const short = (t,n) => { t = String(t||''); return t.length>n ? t.slice(0,n-1)+'…' : t; };
+function phaseEmoji(age){ const e=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘']; return e[Math.round(age/SYN*8)%8]; }
+
+function vToday(){
+  const m = moon(), k = dKey(), d = day(k), it = mainInt(), st = d.steps||{};
+  const task = currentTask();
+  const keys = ['csend','szandek','atel','lepes','hala','jel'];
+  const done = keys.filter(s => st[s]).length;
+  const name = S.profile.name ? ', ' + esc(S.profile.name) : '';
+  const T = (key, ic, t, s) => `<button class="tile ${st[key]?'done':''}" data-act="t_${key}"><span class="ti">${ic}</span><span class="tb"><span class="tt">${t}</span><span class="ts">${s}</span></span></button>`;
+  return `
+  <div class="card gold">
+    <div class="hero">
+      <div class="moon">${moonSVG(m.age, 78)}</div>
+      <div class="txt">
+        <div class="small">${greet()}${name}</div>
+        <div class="phase">${m.name}</div>
+        <div class="small">${fmtDate(k)} · ${m.dayIdx+1}. holdnap</div>
+      </div>
+    </div>
+    <p style="margin:.7rem 0 0">${PHASE_TXT[m.key]}</p>
+  </div>
+
+  <button class="tile wide hl" data-act="${task.tool}" ${task.p?`data-p="${esc(task.p)}"`:''}>
+    <span class="ti">${TOOL_IC[task.tool]||'✨'}</span>
+    <span class="tb"><span class="ts">Mai feladat · ${task.label}</span><span class="tt">${esc(task.t)}</span><span class="ts">${esc(task.d)}</span></span>
+    <span class="go">›</span>
+  </button>
+
+  <div class="row between" style="margin:1.2rem 0 .5rem"><div class="sec-title" style="margin:0">A mai ív · ${done}/6</div><span class="pill">🔥 ${streak()} nap</span></div>
+  <div class="prog" style="margin-bottom:.8rem"><i style="width:${done/6*100}%"></i></div>
+  <div class="tiles">
+    ${T('csend','🌬️','Csend','3 perc légzés')}
+    ${T('szandek','⭐','Szándék', it ? 'Ráhangolódás' : 'Az első szándék')}
+    ${T('atel','🌕','Átélés','Vezetett képzelet')}
+    ${T('lepes','👣','Lépés', it && it.akkor ? esc(short(it.akkor, 34)) : 'A mai kis lépés')}
+    ${T('hala','🙏','Hála','3 jó dolog ma')}
+    ${T('jel','🔆','Jel','Mi mozdult ma?')}
+  </div>
+  <div class="tiles" style="margin-top:.75rem">
+    <button class="tile wide soft" data-act="sos"><span class="ti">🤍</span><span class="tb"><span class="tt">Elakadtam</span><span class="ts">Kétség, félelem, fáradtság? Gyors segítség 3 percben.</span></span><span class="go">›</span></button>
+    <button class="tile wide soft" data-act="kerdesut"><span class="ti">🗝️</span><span class="tb"><span class="tt">Kérdés-út</span><span class="ts">Mély, vezetett kérdéssor a szándékodhoz.</span></span><span class="go">›</span></button>
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <h3>Hogy vagy ma?</h3>
+    <div class="mood">${['😔','😕','😐','🙂','😊'].map((e,i)=>`<button data-mood="${i+1}" class="${d.mood===i+1?'on':''}" aria-label="Hangulat ${i+1}">${e}</button>`).join('')}</div>
+    ${moodConcern() ? `<div class="note warn">Az utóbbi napokban többször nehezebb volt. Ez teljesen emberi. Ha jólesik, beszélj valakivel, akiben megbízol – egy baráttal vagy szakemberrel. A támogatás elfogadása is erő.</div>` : ''}
+  </div>`;
+}
+function moodConcern(){ let low=0, cnt=0; for(let i=0;i<5;i++){ const d = S.days[addDays(dKey(),-i)]; if(d && d.mood){ cnt++; if(d.mood<=2) low++; } } return cnt>=3 && low>=3; }
+function weekDiff(){ const start = S.profile.start || dKey(); const [y,m,d] = start.split('-').map(Number); return Math.floor((new Date().setHours(0,0,0,0) - new Date(y,m-1,d).getTime())/86400000); }
+function currentTask(){
+  const diff = weekDiff();
+  if(diff>=0 && diff<7 && !S.profile.skipWeek){ const t = WEEK_PROG[diff]; return {...t, label:'Első hét', idx:`${diff+1}/7`}; }
+  const mo = moon(), t = MOON_PROG[mo.dayIdx];
+  return {...t, label:'Holdciklus', idx:`${mo.dayIdx+1}/30`};
+}
+const TOOL_LBL = {breath:'Csend-légzés indítása',wizard:'Szándék-varázsló',wizardEdit:'Szándék finomhangolása',visual:'Vezetett átélés',scripting:'Scripting napló',questions:'Kérdések',kerdesut:'Kérdés-út indítása',note:'Napló megnyitása',ladder:'Affirmáció-létra',m369:'369-es írás',signs:'Jelek napló',vision:'Vision board',gratitude:'Hálanapló',revision:'Revízió',sats:'Esti jelenet',today:'Ugrás a mai lépéshez',bars:'Fej-érintéses csend',sos:'Elakadtam'};
+function toolBtn(tool, p){ return `<button class="btn block" data-act="${tool}" ${p?`data-p="${esc(p)}"`:''}>${TOOL_LBL[tool]||'Indítás'}</button>`; }
+
+function vIntentions(){
+  const act = activeInts(), rest = S.intentions.filter(i => i.status!=='aktiv');
+  const card = it => {
+    const r = ROUTES[it.route] || {}; const main = it.id===S.mainId;
+    return `<div class="card ${main?'gold':''}">
+      <div class="row between"><span class="pill">${r.e||''} ${esc(r.n||'')}</span>${main?'<span class="pill">Fő szándék</span>':''}</div>
+      <h3 style="margin-top:.6rem">${esc(it.wish)}</h3>
+      ${it.aff?`<p class="quote">„${esc(it.aff)}”</p>`:''}
+      ${it.ha?`<p class="small"><b>Ha</b> ${esc(it.ha)}, <b>akkor</b> ${esc(it.akkor)}.</p>`:''}
+      <div class="tiles t4">
+        <button class="tile mini" data-act="visual" data-id="${it.id}"><span class="ti">🌕</span><span class="tt">Átélés</span></button>
+        <button class="tile mini" data-act="signs" data-id="${it.id}"><span class="ti">🔆</span><span class="tt">Jel <small>(${(it.signs||[]).length})</small></span></button>
+        <button class="tile mini" data-act="ladder" data-id="${it.id}"><span class="ti">🪜</span><span class="tt">Létra</span></button>
+        <button class="tile mini" data-act="imenu" data-id="${it.id}"><span class="ti">⋯</span><span class="tt">Több</span></button>
+      </div>
+    </div>`;
+  };
+  return `
+  <h2>Szándékaim</h2>
+  <p class="muted">Egy fő és legfeljebb két mellék-szándék – a fókusz erőt ad.</p>
+  <button class="tile wide hl" data-act="wizard" style="margin-bottom:1rem"><span class="ti">✨</span><span class="tb"><span class="tt">Új szándék</span><span class="ts">A varázsló 7 lépésben végigvezet</span></span><span class="go">›</span></button>
+  ${act.length ? act.map(card).join('') : `<div class="card empty">Itt jelennek meg a szándékaid.</div>`}
+  ${rest.length ? `<div class="sec-title">Megvalósult és pihenő szándékok</div>` + rest.map(it => `<div class="card"><span class="pill ${it.status==='valosag'?'':'muted'}">${it.status==='valosag'?'✨ Megvalósult '+(it.achieved?fmtShort(it.achieved):''):'Pihen'}</span><h3 style="margin-top:.5rem">${esc(it.wish)}</h3><div class="tiles t4"><button class="tile mini" data-act="reactivate" data-id="${it.id}"><span class="ti">↺</span><span class="tt">Újra aktív</span></button><button class="tile mini" data-act="delInt" data-id="${it.id}"><span class="ti">🗑️</span><span class="tt">Törlés</span></button></div></div>`).join('') : ''}`;
+}
+
+function vProgram(){
+  const m = moon(), cur = currentTask(), diff = weekDiff();
+  const inWeek = diff>=0 && diff<7 && !S.profile.skipWeek;
+  return `
+  <h2>Program</h2>
+  <p class="muted">Napi 10–15 perc. Koppints bármelyik kockára a feladatért.</p>
+  <button class="tile wide hl" data-act="${cur.tool}" ${cur.p?`data-p="${esc(cur.p)}"`:''}><span class="ti">${TOOL_IC[cur.tool]||'✨'}</span><span class="tb"><span class="ts">Ma · ${cur.label} ${cur.idx}</span><span class="tt">${esc(cur.t)}</span><span class="ts">${esc(cur.d)}</span></span><span class="go">›</span></button>
+
+  <div class="card" style="margin-top:1rem">
+    <div class="row between"><h3 style="margin:0">Első hét</h3><span class="small">${inWeek?`${diff+1}. nap`:'bevezető'}</span></div>
+    <div class="cal c7" style="margin-top:.7rem">${WEEK_PROG.map((t,i)=>`<button class="cell ${inWeek&&i===diff?'now':''} ${inWeek&&i<diff?'past':''}" data-act="task" data-w="1" data-i="${i}"><b>${i+1}</b><span>${TOOL_IC[t.tool]}</span></button>`).join('')}</div>
+    <div class="row wrap" style="gap:.5rem;margin-top:.8rem">${inWeek?`<button class="btn sm ghost" data-act="skipWeek">Átugrom, jöhet a holdciklus</button>`:`<button class="btn sm ghost" data-act="restartWeek">Első hét újrakezdése</button>`}</div>
+  </div>
+
+  <div class="card">
+    <div class="row between"><h3 style="margin:0">Holdciklus</h3><span class="small">ma: ${m.dayIdx+1}. nap</span></div>
+    <p class="small" style="margin:.2rem 0 .7rem">30 kocka, a hold valós fázisához igazítva. A ✓ jelöli, mely napokon gyakoroltál.</p>
+    <div class="cal c6">${MOON_PROG.map((t,i)=>{ const dk = addDays(dKey(), i - m.dayIdx); const past = i < m.dayIdx, done = i <= m.dayIdx && active(dk); return `<button class="cell ${i===m.dayIdx?'now':''} ${past?'past':''} ${done?'ok':''}" data-act="task" data-i="${i}"><b>${i+1}</b><span>${phaseEmoji(i+.5)}</span></button>`; }).join('')}</div>
+  </div>`;
+}
+
+function vTools(){
+  const T = (act, ic, t, s, extra='') => `<button class="tile sq" data-act="${act}" ${extra}><span class="ti">${ic}</span><span class="tt">${t}</span><span class="ts">${s}</span></button>`;
+  return `
+  <h2>Eszköztár</h2>
+  <p class="muted">Minden gyakorlat önállóan is használható.</p>
+  <div class="sec-title">Hangolódás</div>
+  <div class="tiles t3">
+    ${T('breath','🌬️','Csend','légzés','data-min="3"')}
+    ${T('visual','🌕','Átélés','vezetett')}
+    ${T('sats','🌙','Esti jelenet','elalvás előtt')}
+    ${T('bars','🤲','Fej-érintés','Bars ihlette')}
+  </div>
+  <div class="sec-title">Kérdések</div>
+  <div class="tiles t3">
+    ${T('kerdesut','🗝️','Kérdés-út','9 állomás')}
+    ${T('sos','🤍','Elakadtam','gyors segítség')}
+    ${T('quick','❔','Gyors kérdés','egy-egy kérdés')}
+  </div>
+  <div class="sec-title">Szándék</div>
+  <div class="tiles t3">
+    ${T('wizard','⭐','Varázsló','új szándék')}
+    ${T('ladder','🪜','Létra','affirmáció')}
+    ${T('vision','🖼️','Vision board','cél és út')}
+  </div>
+  <div class="sec-title">Írás</div>
+  <div class="tiles t3">
+    ${T('scripting','🖋️','Scripting','múlt időben')}
+    ${T('m369','3️⃣','369','3–6–9 írás')}
+    ${T('m55','5️⃣','55×5','5 napos')}
+    ${T('revision','🔁','Revízió','újraírás')}
+    ${T('note','📓','Napló','szabad írás')}
+    ${T('share','💌','Kártya','megosztás')}
+  </div>
+  <div class="sec-title">Hála és jelek</div>
+  <div class="tiles t3">
+    ${T('gratitude','🙏','Hála','3–5 tétel')}
+    ${T('signs','🔆','Jelek','mi mozdult')}
+  </div>`;
+}
+
+function vJourney(){
+  const ints = S.intentions, done = ints.filter(i=>i.status==='valosag').length;
+  const halaN = Object.values(S.days).reduce((a,d)=>a+(d.hala||[]).length,0);
+  const signN = ints.reduce((a,i)=>a+(i.signs||[]).length,0);
+  const daysN = Object.keys(S.days).filter(active).length;
+  const TYPE = {gratitude:'🙏',sign:'🔆',scripting:'🖋️',revision:'🔁',note:'📓',sats:'🌙',achieve:'✨',intention:'⭐',m369:'3️⃣',kerdesut:'🗝️',sos:'🤍'};
+  return `
+  <h2>Utam</h2>
+  <div class="stat" style="margin-bottom:1rem">
+    <div><b>${daysN}</b><span class="small">gyakorlós nap</span></div>
+    <div><b>${streak()}</b><span class="small">napos széria</span></div>
+    <div><b>${halaN}</b><span class="small">hála</span></div>
+    <div><b>${signN}</b><span class="small">jel</span></div>
+  </div>
+  ${done?`<div class="card gold"><h3>✨ ${done} megvalósult szándék</h3><p class="small">Minden megvalósult szándék bizonyíték arra, hogy a belső munka és a lépések együtt hatnak.</p></div>`:''}
+  <div class="card">
+    <div class="row between"><h3 style="margin:0">Napló</h3><button class="btn sm soft" data-act="note">+ Bejegyzés</button></div>
+    ${S.journal.length ? S.journal.slice(0,60).map(j=>`<div class="list-item"><div class="row between"><b>${TYPE[j.type]||'📓'} ${esc(j.title)}</b><span class="small">${fmtShort(j.date)}</span></div><div class="small" style="white-space:pre-wrap;color:var(--text)">${esc(j.text)}</div></div>`).join('') : `<div class="empty">A bejegyzéseid itt gyűlnek: hálák, jelek, revíziók, kérdés-utak.</div>`}
+  </div>
+  <button class="tile wide soft" data-act="share"><span class="ti">💌</span><span class="tb"><span class="tt">Megosztható kártya</span><span class="ts">Kép a mai affirmációdról</span></span><span class="go">›</span></button>`;
+}
+
+/* ---------- eseménykezelés ---------- */
+function wireView(){
+  $$('#view [data-act]').forEach(b => b.addEventListener('click', () => act(b.dataset.act, b.dataset)));
+  $$('#view [data-mood]').forEach(b => b.addEventListener('click', () => { day().mood = +b.dataset.mood; save(); render(); }));
+}
+function wireIn(root){ $$('[data-act]', root).forEach(b => b.addEventListener('click', () => act(b.dataset.act, b.dataset))); }
+function act(a, ds={}){
+  const id = ds.id;
+  switch(a){
+    case 't_csend': return openBreath(3);
+    case 't_szandek': return mainInt() ? openTune() : openWizard();
+    case 't_atel': return openVisual();
+    case 't_lepes': return openStep();
+    case 't_hala': return openGratitude();
+    case 't_jel': return openSigns();
+    case 'breath': return openBreath(+ds.min||3);
+    case 'wizard': return openWizard();
+    case 'wizardEdit': return openWizard(id || (mainInt()&&mainInt().id));
+    case 'visual': return openVisual(id);
+    case 'sats': return openSATS(id);
+    case 'scripting': return openScripting();
+    case 'questions': case 'quick': return openQuestions();
+    case 'kerdesut': return openJourney();
+    case 'sos': return openSOS();
+    case 'bars': return openBars();
+    case 'note': return openNote(ds.p);
+    case 'ladder': return openLadder(id);
+    case 'm369': return open369();
+    case 'm55': return open55();
+    case 'signs': return openSigns(id);
+    case 'vision': return openVision();
+    case 'gratitude': return openGratitude();
+    case 'revision': return openRevision();
+    case 'share': return openShare();
+    case 'imenu': return openIntentMenu(id);
+    case 'task': return openTask(ds.w ? WEEK_PROG[+ds.i] : MOON_PROG[+ds.i], ds.w ? `Első hét · ${+ds.i+1}. nap` : `Holdciklus · ${+ds.i+1}. nap`);
+    case 'today': closeSheetQuiet(); return go('ma');
+    case 'tuned': mark('szandek'); toast('Ráhangolódtál. Vidd magaddal ezt az érzést.'); return closeSheet();
+    case 'setMain': S.mainId = id; save(); toast('Ez lett a fő szándékod.'); return closeSheet();
+    case 'achieve': { const it = S.intentions.find(i=>i.id===id); if(!it) return; it.status='valosag'; it.achieved=dKey(); if(S.mainId===id) S.mainId=(activeInts()[0]||{}).id||null; addJournal('achieve','Megvalósult szándék', it.wish); chime(); toast('Gratulálok! ✨ Ünnepeld meg!'); return closeSheet(); }
+    case 'rest': { const it = S.intentions.find(i=>i.id===id); if(!it) return; it.status='pihen'; if(S.mainId===id) S.mainId=(activeInts()[0]||{}).id||null; save(); return closeSheet(); }
+    case 'reactivate': { const it = S.intentions.find(i=>i.id===id); if(!it) return; if(activeInts().length>=3) return toast('Három aktív szándék a maximum. Pihentess egyet előbb.'); it.status='aktiv'; if(!S.mainId) S.mainId=id; save(); return render(); }
+    case 'delInt': if(confirm('Biztosan törlöd ezt a szándékot?')){ S.intentions = S.intentions.filter(i=>i.id!==id); if(S.mainId===id) S.mainId=(activeInts()[0]||{}).id||null; save(); render(); } return;
+    case 'skipWeek': S.profile.skipWeek = true; save(); return render();
+    case 'restartWeek': S.profile.skipWeek = false; S.profile.start = dKey(); save(); return render();
+  }
+}
+function closeSheetQuiet(){ if($('#sheet').classList.contains('open')){ onClose=null; closeSheet(); } }
+
+/* ---------- gyors lapok a Ma fülhöz ---------- */
+function openTune(){
+  const it = mainInt();
+  sheet('Szándék', `<p class="small">${(ROUTES[it.route]||{}).e||''} ${esc(it.wish)}</p>
+  <div class="card gold" style="text-align:center"><p class="quote" style="font-size:1.6rem">„${esc(it.aff||it.wish)}”</p></div>
+  <p class="muted">Mondd ki lassan háromszor. Figyeld, hol érzed a testedben. Ha a belső hang ellenkezik, a Létrán lépj egy fokkal lejjebb.</p>
+  <div class="tiles">
+    <button class="tile" data-act="tuned"><span class="ti">✓</span><span class="tb"><span class="tt">Ráhangolódtam</span></span></button>
+    <button class="tile" id="tuSay"><span class="ti">🔈</span><span class="tb"><span class="tt">Felolvasás</span></span></button>
+    <button class="tile" data-act="ladder" data-id="${it.id}"><span class="ti">🪜</span><span class="tb"><span class="tt">Létra</span></span></button>
+    <button class="tile" data-act="wizardEdit" data-id="${it.id}"><span class="ti">✏️</span><span class="tb"><span class="tt">Finomhangolás</span></span></button>
+  </div>`);
+  wireIn($('#shBody')); $('#tuSay').addEventListener('click',()=>speakOne(it.aff||it.wish));
+}
+function openStep(){
+  const it = mainInt(), d = day();
+  if(!it || !it.akkor) return sheet('A mai lépés', `<p class="muted">A ha-akkor terved adja a mai lépést. A Szándék-varázsló 5. lépésében állítod be.</p><button class="btn block" data-act="wizardEdit">Ha-akkor terv beállítása</button>`) || wireIn($('#shBody'));
+  sheet('A mai lépés', `<div class="card gold"><p style="font-size:1.15rem;margin:0"><b>Ha</b> ${esc(it.ha)},<br><b>akkor</b> ${esc(it.akkor)}.</p></div>
+  <button class="btn block" id="stDo">${d.steps.lepes?'✓ Megtettem – visszavonás':'Megtettem ✓'}</button>
+  <div class="note">Túl nagynak tűnik? Készíts belőle 2 perces változatot – a kis lépés is lépés, és a lendület a mozgásból születik.</div>
+  <label>A 2 perces változat</label><input id="stMini" placeholder="pl. megnyitom a táblázatot és beírom az első sort">
+  <button class="btn sm ghost" id="stMiniS" style="margin-top:.5rem">Ma ezt teszem meg</button>`);
+  $('#stDo').addEventListener('click',()=>{ d.steps.lepes=!d.steps.lepes; save(); if(d.steps.lepes){ chime(); toast('Szép! Minden kis lépés számít.'); } closeSheet(); });
+  $('#stMiniS').addEventListener('click',()=>{ const v=$('#stMini').value.trim(); if(!v) return toast('Írd le a mini lépést.'); addJournal('note','Mini lépés', v); toast('Rögzítve. Ha megvan, jelöld meg: Megtettem.'); });
+}
+function openTask(t, label){
+  sheet(label, `<div class="card gold"><div style="font-size:2.2rem">${TOOL_IC[t.tool]||'✨'}</div><h3>${esc(t.t)}</h3><p>${esc(t.d)}</p></div>${toolBtn(t.tool, t.p)}`);
+  wireIn($('#shBody'));
+}
+function openIntentMenu(id){
+  const it = S.intentions.find(i=>i.id===id); if(!it) return;
+  const main = it.id===S.mainId;
+  sheet('Szándék', `<p class="muted">${esc(it.wish)}</p>
+  <div class="tiles">
+    <button class="tile" data-act="wizardEdit" data-id="${id}"><span class="ti">✏️</span><span class="tb"><span class="tt">Szerkesztés</span></span></button>
+    ${main?'':`<button class="tile" data-act="setMain" data-id="${id}"><span class="ti">⭐</span><span class="tb"><span class="tt">Legyen a fő</span></span></button>`}
+    <button class="tile" data-act="sats" data-id="${id}"><span class="ti">🌙</span><span class="tb"><span class="tt">Esti jelenet</span></span></button>
+    <button class="tile" data-act="achieve" data-id="${id}"><span class="ti">✨</span><span class="tb"><span class="tt">Megvalósult</span></span></button>
+    <button class="tile" data-act="rest" data-id="${id}"><span class="ti">💤</span><span class="tb"><span class="tt">Pihentetem</span></span></button>
+    <button class="tile" data-act="delInt" data-id="${id}"><span class="ti">🗑️</span><span class="tb"><span class="tt">Törlés</span></span></button>
+  </div>`);
+  wireIn($('#shBody'));
+}
+
+/* ---------- lélegzés-segéd: 4-4-6 (IBAR) ---------- */
+function miniBreath(el, cycles, onDone){
+  clearTimeout(window._bt); let c = 0, ph = 0;
+  const seq = [['Belégzés',4],['Tartsd',4],['Kilégzés',6]];
+  const tick = (left) => {
+    const [lbl, len] = seq[ph];
+    el.innerHTML = `<div class="mb"><b>${lbl}</b><span>${left}</span></div><div class="small" style="text-align:center">${c+1}. kör / ${cycles}</div>`;
+    if(left > 1) { window._bt = setTimeout(()=>tick(left-1), 1000); return; }
+    window._bt = setTimeout(() => { ph++; if(ph>2){ ph=0; c++; } if(c>=cycles){ el.innerHTML = '<div class="mb"><b>Kész</b><span>✓</span></div>'; chime(); onDone && onDone(); return; } tick(seq[ph][1]); }, 1000);
+  };
+  ac(); tick(seq[0][1]);
+}
+
+/* ---------- lap (sheet) ---------- */
+let onClose = null;
+function sheet(title, html, close){ $('#shTitle').textContent = title; $('#shBody').innerHTML = html; $('#sheet').classList.add('open'); document.body.style.overflow='hidden'; $('#shBody').scrollTop = 0; onClose = close || null; }
+function closeSheet(){ TTS.stop(); DRONE.stop(); clearInterval(window._bi); clearTimeout(window._bt); $('#sheet').classList.remove('open'); document.body.style.overflow=''; if(onClose){ const f=onClose; onClose=null; f(); } render(); }
+$('#shClose').addEventListener('click', closeSheet);
+
+/* ---------- Csend-légzés ---------- */
+function openBreath(min=3){
+  sheet('Csend-légzés', `
+    <p class="muted">Lélegezz a kör ritmusára: 5 másodperc be, 5 másodperc ki. Figyeld, hogyan lassul a tested, ahogy a levegő a szíved körül áramlik.</p>
+    <div class="chips" id="bMin">${[1,3,5].map(n=>`<button class="chip ${n===min?'on':''}" data-m="${n}">${n} perc</button>`).join('')}</div>
+    <div class="breath-wrap"><div class="breath" id="bCircle"><div class="ring"></div><div class="lbl" id="bLbl">Kész?</div></div></div>
+    <div class="timer" id="bTime">${min}:00</div>
+    <button class="btn block" id="bGo" style="margin-top:1rem">Indítás</button>
+    <div class="note">Miért működik? A kb. percenkénti 6 légzés szinkronba hozza a szívritmust és a légzést (szívkoherencia). Ez az állapot a legjobb kiindulópont minden további gyakorlathoz.</div>`);
+  let m = min;
+  $$('#bMin .chip').forEach(c => c.addEventListener('click', () => { if(window._bi) return; m = +c.dataset.m; $$('#bMin .chip').forEach(x=>x.classList.toggle('on', x===c)); $('#bTime').textContent = m+':00'; }));
+  $('#bGo').addEventListener('click', () => {
+    if(window._bi){ clearInterval(window._bi); window._bi=null; DRONE.stop(); $('#bGo').textContent='Indítás'; $('#bLbl').textContent='Szünet'; $('#bCircle').classList.remove('in'); return; }
+    ac(); DRONE.start(); let left = m*60, phase = 0; $('#bGo').textContent='Megállítás';
+    const tick = () => {
+      if(phase % 10 === 0){ $('#bCircle').classList.add('in'); $('#bLbl').textContent='Belégzés'; }
+      if(phase % 10 === 5){ $('#bCircle').classList.remove('in'); $('#bLbl').textContent='Kilégzés'; }
+      $('#bTime').textContent = `${Math.floor(left/60)}:${pad(left%60)}`;
+      phase++; left--;
+      if(left < 0){ clearInterval(window._bi); window._bi=null; DRONE.stop(); chime(); mark('csend'); $('#bLbl').textContent='Csend'; $('#bCircle').classList.remove('in'); $('#bGo').textContent='Újra'; $('#bTime').textContent='Kész – a nyugalom veled marad.'; }
+    };
+    tick(); window._bi = setInterval(tick, 1000);
+  });
+}
+
+/* ---------- Szándék-varázsló ---------- */
+function openWizard(editId){
+  const ex = editId ? S.intentions.find(i=>i.id===editId) : null;
+  const W = ex ? JSON.parse(JSON.stringify(ex)) : {id:uid(), route:S.profile.route||'', wish:'', why:[], whyText:'', outcome:'', obstacle:'', ha:'', akkor:'', aff:'', level:2, sats:'', created:dKey(), status:'aktiv', signs:[]};
+  let step = ex ? 1 : (W.route ? 1 : 0);
+  const N = 7;
+  const draw = () => {
+    const r = ROUTES[W.route] || ROUTES.onertek, e = r.ex;
+    const base = W.affBase || e.aff;
+    let h = `<div class="prog" style="margin-bottom:1rem"><i style="width:${(step+1)/N*100}%"></i></div><div class="small">${step+1}. lépés / ${N}</div>`;
+    if(step===0){
+      h += `<h3>Melyik területen teremtesz?</h3><div class="route-grid">${Object.entries(ROUTES).map(([k,v])=>`<button class="route ${W.route===k?'on':''}" data-r="${k}"><div class="e">${v.e}</div><div class="n">${v.n}</div><div class="s">${v.s}</div></button>`).join('')}</div>`;
+    } else if(step===1){
+      h += `<h3>Mit szeretnél teremteni?</h3><p class="muted">Egy mondat, jelen időben, arról, amit szeretnél. Konkrét, és rajtad múló.</p><textarea id="wWish" placeholder="${esc(e.wish)}">${esc(W.wish)}</textarea>${negBox('wN1')}<button class="btn sm ghost" style="margin-top:.5rem" data-fill="wWish" data-v="${esc(e.wish)}">Példa betöltése</button>`;
+    } else if(step===2){
+      h += `<h3>Miért fontos ez neked?</h3><p class="muted">A belső okok (kapcsolódás, fejlődés, béke) tartósabb motivációt adnak, mint a külsők. Válassz egyet vagy többet.</p><div class="chips">${r.why.map(w=>`<button class="chip ${W.why.includes(w)?'on':''}" data-w="${esc(w)}">${esc(w)}</button>`).join('')}</div><label>Hogyan érzed magad, amikor ez megvalósul?</label><textarea id="wWhy" placeholder="pl. Nyugodt vagyok, könnyű a mellkasom, mosolygok.">${esc(W.whyText)}</textarea>`;
+    } else if(step===3){
+      h += `<h3>A legszebb pillanat</h3><p class="muted">Írd le azt az egy jelenetet, amikor a szándékod már valóság. Jelen időben, érzékszervekkel: mit látsz, hallasz, érzel? Ez lesz az Átélés középpontja.</p><textarea id="wOut" placeholder="${esc(e.outcome)}">${esc(W.outcome)}</textarea>${negBox('wN3')}`;
+    } else if(step===4){
+      h += `<h3>A belső akadály</h3><p class="muted">Most nézz befelé: mi az a <b>benned lévő</b> dolog – érzés, gondolat, szokás –, ami az utadba állhat? Ez a lépés teszi erőssé a szándékot: a kutatások szerint a vágy és az akadály együttes látása mozdít cselekvésre.</p><textarea id="wObs" placeholder="${esc(e.obstacle)}">${esc(W.obstacle)}</textarea>`;
+    } else if(step===5){
+      h += `<h3>A ha-akkor terved</h3><p class="muted">Egy előre eldöntött, konkrét lépés egy konkrét helyzethez. Ez az egyik legjobban kutatott eszköz a célok elérésére.</p><label>Ha…</label><input id="wHa" placeholder="${esc(e.ha)}" value="${esc(W.ha)}"><label>…akkor</label><input id="wAk" placeholder="${esc(e.akkor)}" value="${esc(W.akkor)}">${negBox('wN5')}<div class="note">Tipp: a „ha” lehet egy napi időpont, vagy maga a belső akadály („ha megjelenik a kétség…”). Az „akkor” legyen 2–20 perces, kézzelfogható lépés.</div>`;
+    } else if(step===6){
+      h += `<h3>Az affirmációd</h3><p class="muted">Írd le a végső mondatot, aztán válaszd ki azt a fokot, ami <b>most hihető</b> számodra. Bármikor feljebb léphetsz.</p><input id="wAff" value="${esc(W.affBase||'')}" placeholder="${esc(e.aff)}">${negBox('wN6')}<div id="wLad" style="margin-top:.8rem"></div>
+      <label>Esti jelenet (nem kötelező)</label><p class="small" style="margin-top:0">Egy rövid pillanat, ami azt jelzi, hogy megtörtént – pl. valaki gratulál.</p><input id="wSats" value="${esc(W.sats)}" placeholder="${esc(e.sats)}">`;
+    }
+    h += `<div class="row" style="gap:.6rem;margin-top:1.3rem">${step>0?`<button class="btn ghost" id="wBack">Vissza</button>`:''}<button class="btn" style="flex:1" id="wNext">${step===N-1?'Mentés':'Tovább'}</button></div>`;
+    $('#shBody').innerHTML = h;
+    $$('#shBody [data-r]').forEach(b=>b.addEventListener('click',()=>{ W.route=b.dataset.r; draw(); }));
+    $$('#shBody [data-w]').forEach(b=>b.addEventListener('click',()=>{ const w=b.dataset.w; W.why = W.why.includes(w)?W.why.filter(x=>x!==w):[...W.why,w]; b.classList.toggle('on'); }));
+    $$('#shBody [data-fill]').forEach(b=>b.addEventListener('click',()=>{ $('#'+b.dataset.fill).value=b.dataset.v; $('#'+b.dataset.fill).dispatchEvent(new Event('input')); }));
+    wireNeg('wWish','wN1'); wireNeg('wOut','wN3'); wireNeg('wAk','wN5'); wireNeg('wAff','wN6');
+    if(step===6){ const lad = () => { const v = $('#wAff').value.trim() || base; $('#wLad').innerHTML = ladder(v).map((t,i)=>`<button class="tool" data-l="${i+1}" style="${W.level===i+1?'border-color:var(--gold);background:rgba(217,178,95,.14)':''}"><span class="ic">${i+1}</span><span><div class="t" style="font-weight:600">${esc(t)}</div></span></button>`).join(''); $$('#wLad [data-l]').forEach(b=>b.addEventListener('click',()=>{ W.level=+b.dataset.l; lad(); })); }; $('#wAff').addEventListener('input', lad); lad(); }
+    const collect = () => {
+      if(step===1) W.wish = $('#wWish').value.trim();
+      if(step===2) W.whyText = $('#wWhy').value.trim();
+      if(step===3) W.outcome = $('#wOut').value.trim();
+      if(step===4) W.obstacle = $('#wObs').value.trim();
+      if(step===5){ W.ha = $('#wHa').value.trim(); W.akkor = $('#wAk').value.trim(); }
+      if(step===6){ W.affBase = $('#wAff').value.trim() || base; W.aff = ladder(W.affBase)[W.level-1]; W.sats = $('#wSats').value.trim(); }
+    };
+    $('#wBack') && $('#wBack').addEventListener('click',()=>{ collect(); step--; draw(); });
+    $('#wNext').addEventListener('click',()=>{
+      collect();
+      if(step===0 && !W.route) return toast('Válassz egy területet.');
+      if(step===1 && !W.wish) return toast('Írd le egy mondatban, mit szeretnél.');
+      if(step===5 && (!W.ha || !W.akkor)) return toast('Töltsd ki mindkét mezőt – ez a legerősebb lépés.');
+      if(step < N-1){ step++; return draw(); }
+      if(!ex){
+        if(activeInts().length >= 3){ W.status='pihen'; toast('Három aktív szándékod van, ez pihenőbe került.'); }
+        S.intentions.unshift(W); if(!S.mainId && W.status==='aktiv') S.mainId = W.id;
+        addJournal('intention','Új szándék', W.wish);
+      } else { Object.assign(ex, W); save(); }
+      mark('szandek'); save(); closeSheet(); go('szandek');
+      toast('A szándékod rögzítve. 🌙');
+    });
+  };
+  sheet(ex?'Szándék finomhangolása':'Szándék-varázsló','');
+  draw();
+}
+function ladder(s){
+  let t = String(s||'').trim().replace(/[.!]+$/,''); if(!t) t = 'jó dolgok érkeznek az életembe';
+  const low = t.charAt(0).toLowerCase() + t.slice(1);
+  return [`Nyitott vagyok arra a lehetőségre, hogy ${low}.`, `Engedem, hogy egyre inkább igaz legyen: ${low}.`, `Napról napra közelebb kerülök ehhez: ${low}.`, t.charAt(0).toUpperCase()+t.slice(1)+'.'];
+}
+function openLadder(id){
+  const it = id ? S.intentions.find(i=>i.id===id) : mainInt();
+  sheet('Affirmáció-létra', `<p class="muted">A kutatás szerint a túl nagy ugrású mondat – ha a belső hang ellentmond – akár ronthatja is a hangulatot. A létra fokozatosan visz feljebb. Mindig azt a fokot mondd, ami <b>most hihető</b>.</p>
+  <label>A végső mondatod</label><input id="lAff" value="${esc(it ? (it.affBase||it.aff||'') : '')}" placeholder="pl. Értékes vagyok, úgy, ahogy vagyok.">${negBox('lN')}
+  <div id="lList" style="margin-top:.8rem"></div>
+  ${it?`<button class="btn block" id="lSave" style="margin-top:.6rem">A kiválasztott fok mentése</button>`:''}
+  <div class="note">Gyakorlat: mondd ki a választott mondatot háromszor, lassan, és figyeld, hol érzed a testedben. Ha a belső hang ellenkezik, lépj egy fokkal lejjebb – ez is haladás.</div>`);
+  let lvl = it ? (it.level||2) : 2;
+  const draw = () => { $('#lList').innerHTML = ladder($('#lAff').value).map((t,i)=>`<button class="tool" data-l="${i+1}" style="${lvl===i+1?'border-color:var(--gold);background:rgba(217,178,95,.14)':''}"><span class="ic">${i+1}</span><span><div class="t" style="font-weight:600">${esc(t)}</div></span></button>`).join(''); $$('#lList [data-l]').forEach(b=>b.addEventListener('click',()=>{ lvl=+b.dataset.l; draw(); speakOne(ladder($('#lAff').value)[lvl-1]); })); };
+  $('#lAff').addEventListener('input', draw); wireNeg('lAff','lN'); draw();
+  $('#lSave') && $('#lSave').addEventListener('click',()=>{ it.affBase = $('#lAff').value.trim(); it.level = lvl; it.aff = ladder(it.affBase)[lvl-1]; save(); toast('Mentve.'); closeSheet(); });
+}
+function speakOne(t){ if(TTS.has()) TTS.run([{t, p:0}]); }
+
+/* ---------- Vezetett átélés ---------- */
+function visualScript(it){
+  const r = ROUTES[it ? it.route : 'onertek'] || ROUTES.onertek;
+  const out = it && it.outcome ? it.outcome : r.ex.outcome;
+  const step = it && it.akkor ? it.akkor : r.ex.akkor;
+  const aff = it && it.aff ? it.aff : r.ex.aff;
+  const feel = it && it.whyText ? it.whyText : '';
+  return [
+    {t:'Helyezkedj el kényelmesen. Engedd, hogy a figyelmed megérkezzen a lélegzetedbe.', p:4},
+    {t:'Belégzés… lassan, öt másodpercig. És kilégzés… lassan, öt másodpercig.', p:9},
+    {t:'Figyeld, ahogy a levegő a szíved környékén áramlik be és ki. Mintha a szíveden keresztül lélegeznél.', p:10},
+    {t:'Idézz fel egy pillanatot, amikor hálát éreztél. Egy embert, egy helyet, egy apró ajándékot. Engedd, hogy ez az érzés kitöltse a mellkasodat.', p:12},
+    {t:'Most a figyelmed az útra vándorol. Látod magad, ahogy megteszed a következő lépést: ' + step + '.', p:6},
+    {t:r.ut, p:8},
+    {t:'Figyeld meg: hol vagy? Milyen a fény? Mit hallasz? Milyen a testtartásod, ahogy cselekszel?', p:10},
+    {t:'Most lépj előre az időben, abba a pillanatba, amikor a szándékod már valóság.', p:5},
+    {t:out, p:8},
+    {t:r.veg, p:10},
+    {t:'Ez most történik. Belülről éled. Mit látsz magad előtt? Milyen hangokat hallasz? Mit érzel a testedben?', p:12},
+    ...(feel ? [{t:'Érezd: ' + feel, p:9}] : []),
+    {t:'Mondd el magadban, lassan: ' + aff, p:7},
+    {t:'Engedd, hogy ez az érzés a sejtjeidig áradjon. Ez az érzés a tiéd, és veled marad.', p:8},
+    {t:'Most érezd a talpadat. Érezd a súlyodat azon, amin ülsz vagy fekszel. Mozdítsd meg finoman az ujjaidat.', p:6},
+    {t:'Visszaérkezel a jelenbe, és magaddal hozod ezt a nyugalmat, ezt a bizonyosságot. Készen állsz a mai lépésedre.', p:2}
+  ];
+}
+function openVisual(id){
+  const it = id ? S.intentions.find(i=>i.id===id) : mainInt();
+  const segs = visualScript(it);
+  sheet('Vezetett átélés', `
+    ${it?`<p class="small">Szándék: <b class="gold">${esc(it.wish)}</b></p>`:`<div class="note">Még nincs szándékod, ezért egy példaszöveget hallasz. A Szándék-varázsló után a saját mondataiddal szól.</div>`}
+    <div class="narr"><p id="vTxt">Kb. ${Math.round(segs.reduce((a,s)=>a+s.p+s.t.length*0.075,0)/60)} perc. Ülj vagy feküdj kényelmesen. Amikor készen állsz, indítsd el.</p></div>
+    <div class="prog"><i id="vProg" style="width:0%"></i></div>
+    <div class="row" style="gap:.6rem;margin-top:1rem"><button class="btn" style="flex:1" id="vGo">Indítás</button></div>
+    <p class="small" style="margin-top:.8rem">${TTS.has()?'A szöveget a telefon magyar hangja olvassa fel. Hangerő és tempó a Beállításokban.':'Felolvasás kikapcsolva – a szöveg lépésenként jelenik meg.'}</p>
+    <div class="note">A kutatás szerint az a képzelet a leghatékonyabb, amely az utat és a célt is tartalmazza, és belülről, érzékszervekkel élhető át.</div>`);
+  let running = false;
+  $('#vGo').addEventListener('click', () => {
+    if(running){ TTS.stop(); DRONE.stop(); running=false; $('#vGo').textContent='Újraindítás'; return; }
+    running = true; ac(); DRONE.start(); $('#vGo').textContent='Megállítás';
+    TTS.run(segs, (i,s)=>{ $('#vTxt').textContent = s.t; $('#vProg').style.width = ((i+1)/segs.length*100)+'%'; }, ()=>{ running=false; DRONE.stop(); chime(); mark('atel'); $('#vTxt').textContent='Szép munka. Vidd magaddal ezt az érzést a napodba.'; $('#vGo').textContent='Újra'; });
+  });
+}
+
+/* ---------- Esti jelenet (SATS) ---------- */
+function openSATS(id){
+  const it = id ? S.intentions.find(i=>i.id===id) : mainInt();
+  const r = ROUTES[it?it.route:'onertek'] || ROUTES.onertek;
+  sheet('Esti jelenet', `
+    <p class="muted">Neville Goddard módszere: elalvás előtt, ellazult testtel egy rövid jelenetet élsz át újra és újra, ami azt jelzi, hogy a szándékod megvalósult. Aztán ebben az érzésben alszol el.</p>
+    <label>A jeleneted</label>
+    <textarea id="sScene" placeholder="${esc(r.ex.sats)}">${esc(it&&it.sats?it.sats:'')}</textarea>${negBox('sN')}
+    <div class="note">Legyen rövid, 3–5 másodperces pillanat: egy kézfogás, egy ölelés, egy mondat. Érezd, ahogy megtörténik.</div>
+    <div class="narr"><p id="sTxt">Feküdj le kényelmesen, és indítsd el.</p></div>
+    <button class="btn block" id="sGo">Indítás</button>`);
+  wireNeg('sScene','sN');
+  let run=false;
+  $('#sGo').addEventListener('click',()=>{
+    if(run){ TTS.stop(); DRONE.stop(); run=false; $('#sGo').textContent='Indítás'; return; }
+    const sc = $('#sScene').value.trim() || r.ex.sats;
+    if(it){ it.sats = sc; save(); }
+    run=true; ac(); DRONE.start(); $('#sGo').textContent='Megállítás';
+    const segs = [
+      {t:'Helyezkedj el kényelmesen az ágyadban. Engedd, hogy a tested elnehezüljön.',p:5},
+      {t:'Lélegezz lassan. Minden kilégzéssel egy kicsit mélyebbre ereszkedsz.',p:10},
+      {t:'A homlokod ellazul. A vállad ellazul. A kezed ellazul. A lábad ellazul.',p:10},
+      {t:'Most idézd fel a jelenetedet. Ez most történik.',p:3},
+      {t:sc,p:9},{t:'Éld át újra. Érezd, ahogy megtörténik.',p:3},{t:sc,p:9},
+      {t:'Még egyszer, még elevenebben.',p:3},{t:sc,p:12},
+      {t:'Ismételd magadban újra és újra, amíg valóságosnak érzed.',p:20},
+      {t:'Engedd, hogy ez az érzés átvezessen az álomba. Minden rendben van. Jó éjszakát.',p:2}
+    ];
+    TTS.run(segs,(i,s)=>{ $('#sTxt').textContent=s.t; },()=>{ run=false; DRONE.stop(); mark('hala'); addJournal('sats','Esti jelenet', sc); $('#sTxt').textContent='Jó éjszakát. 🌙'; $('#sGo').textContent='Újra'; });
+  });
+}
+
+/* ---------- Írás eszközök ---------- */
+function openScripting(){
+  const it = mainInt(); const r = ROUTES[it?it.route:'onertek']||ROUTES.onertek;
+  const prompts = ['Írd le egy napodat, amikor a szándékod már valóság – reggeltől estig.','Írj levelet egy barátodnak arról, ami a múlt hónapban történt veled.','Írj köszönőlevelet az életnek mindazért, ami megérkezett.','Mi változott benned, mióta a szándékod valóra vált?'];
+  const today = new Date(); const fut = new Date(today.getFullYear(), today.getMonth()+3, today.getDate());
+  sheet('Scripting', `
+    <p class="muted">Írj 10 percig úgy, mintha a szándékod már megtörtént volna. A „legjobb lehetséges önmagam” írás bizonyítottan növeli az optimizmust és a jóllétet.</p>
+    <div class="note">Tipp: kezdd így: „Ma ${fut.getFullYear()}. ${HONAP[fut.getMonth()]} ${fut.getDate()}. van, és…”</div>
+    <label>Választható kezdőkérdés</label><div class="chips" id="scP">${prompts.map((p,i)=>`<button class="chip ${i===0?'on':''}" data-i="${i}">${i+1}</button>`).join('')}</div>
+    <p id="scQ" class="quote" style="font-size:1.2rem">${prompts[0]}</p>
+    ${it?`<p class="small">Szándék: ${esc(it.wish)}</p>`:''}
+    <textarea id="scT" style="min-height:240px" placeholder="Ma … van, és…"></textarea>${negBox('scN')}
+    <button class="btn block" id="scS" style="margin-top:.8rem">Mentés a naplóba</button>`);
+  let pi=0;
+  $$('#scP .chip').forEach(c=>c.addEventListener('click',()=>{ pi=+c.dataset.i; $$('#scP .chip').forEach(x=>x.classList.toggle('on',x===c)); $('#scQ').textContent=prompts[pi]; }));
+  wireNeg('scT','scN');
+  $('#scS').addEventListener('click',()=>{ const t=$('#scT').value.trim(); if(!t) return toast('Írj néhány sort.'); addJournal('scripting','Scripting', t); mark('atel'); toast('Elmentve a naplóba.'); closeSheet(); });
+}
+function openNote(prompt){
+  sheet('Napló', `${prompt?`<p class="quote" style="font-size:1.2rem">${esc(prompt)}</p>`:'<p class="muted">Gondolatok, felismerések, bármi, ami most benned van.</p>'}
+  <textarea id="nT" style="min-height:220px"></textarea>
+  <button class="btn block" id="nS" style="margin-top:.8rem">Mentés</button>`);
+  $('#nS').addEventListener('click',()=>{ const t=$('#nT').value.trim(); if(!t) return toast('Írj néhány szót.'); addJournal('note', prompt ? prompt.split(/[.…?:]/)[0].slice(0,60) : 'Jegyzet', t); toast('Mentve.'); closeSheet(); });
+}
+function openRevision(){
+  sheet('Revízió', `<p class="muted">Neville Goddard technikája: egy nehéz pillanatot képzeletben újraírsz úgy, ahogy szeretted volna. A pszichológiában hasonló módszer az „imagery rescripting”. A múlt megmarad – a benned élő lenyomatát finomítod.</p>
+  <label>1. Mi történt? (röviden)</label><textarea id="rv1" style="min-height:80px"></textarea>
+  <label>2. Hogyan szeretted volna?</label><textarea id="rv2" style="min-height:80px"></textarea>
+  <label>3. Írd le jelen időben, ahogy most megtörténik</label><textarea id="rv3" placeholder="pl. A kolléga rám néz, mosolyog, és azt mondja: igazad van, köszönöm." style="min-height:110px"></textarea>${negBox('rvN')}
+  <div class="note">Ezután csukd be a szemed, ha jólesik, és éld át az új változatot háromszor. Figyeld, hogyan változik a testérzet.</div>
+  <button class="btn block" id="rvS">Mentés</button>`);
+  wireNeg('rv3','rvN');
+  $('#rvS').addEventListener('click',()=>{ const a=$('#rv1').value.trim(), b=$('#rv2').value.trim(), c=$('#rv3').value.trim(); if(!c) return toast('Írd le az új változatot.'); addJournal('revision','Revízió', `Ami történt: ${a}\nAhogy szerettem volna: ${b}\nAz új változat: ${c}`); mark('hala'); toast('Az új változat rögzítve.'); closeSheet(); });
+}
+function openGratitude(){
+  const d = day();
+  sheet('Hálanapló', `<p class="muted">3–5 dolog, amiért ma hálás vagy. Lehet apróság is: egy mosoly, egy jó kávé, egy kedves szó. A hála a manifesztáció érzelmi motorja.</p>
+  ${[0,1,2,3,4].map(i=>`<input class="gI" style="margin-bottom:.55rem" placeholder="${i<3?'Hálás vagyok, mert…':'(nem kötelező)'}" value="${esc((d.hala||[])[i]||'')}">`).join('')}
+  <button class="btn block" id="gS" style="margin-top:.4rem">Mentés</button>
+  <div class="note">Kutatás: akik rendszeresen hálanaplót vezettek, optimistábbak voltak, jobban aludtak és többet mozogtak.</div>`);
+  $('#gS').addEventListener('click',()=>{ const v=$$('.gI').map(x=>x.value.trim()).filter(Boolean); if(!v.length) return toast('Írj legalább egy dolgot.'); d.hala=v; d.steps.hala=true; save(); addJournal('gratitude','Hála', v.map(x=>'• '+x).join('\n')); chime(); toast('Köszönöm, hogy hálát adtál. 🙏'); closeSheet(); });
+}
+function openSigns(id){
+  const ints = activeInts();
+  if(!ints.length){ return sheet('Jelek napló', `<div class="empty">A jeleket egy szándékhoz kapcsolod. Előbb hozz létre egyet.</div><button class="btn block" id="sgW">Szándék-varázsló</button>`, null) || $('#sgW').addEventListener('click',()=>{ closeSheet(); openWizard(); }); }
+  let sel = id || (mainInt()&&mainInt().id) || ints[0].id;
+  const draw = () => { const it = S.intentions.find(i=>i.id===sel);
+    $('#shBody').innerHTML = `<p class="muted">Lehetőség, véletlen, jó hír, egy beszélgetés, egy belső változás – bármi, ami azt mutatja, hogy úton vagy. A figyelmed így a célra hangolódik.</p>
+    <label>Melyik szándékhoz?</label><select id="sgSel">${ints.map(i=>`<option value="${i.id}" ${i.id===sel?'selected':''}>${esc(i.wish.slice(0,60))}</option>`).join('')}</select>
+    <label>A jel</label><textarea id="sgT" style="min-height:90px" placeholder="pl. Felhívott egy régi ismerős egy lehetőséggel."></textarea>
+    <button class="btn block" id="sgS" style="margin-top:.6rem">Mentés</button>
+    <div class="sec-title">Eddigi jelek</div>
+    ${(it.signs||[]).length ? it.signs.map(s=>`<div class="list-item"><div class="small">${fmtShort(s.date)}</div>${esc(s.text)}</div>`).join('') : '<div class="empty">Az első jel már úton van – figyeld a mai napot!</div>'}`;
+    $('#sgSel').addEventListener('change',e=>{ sel=e.target.value; draw(); });
+    $('#sgS').addEventListener('click',()=>{ const t=$('#sgT').value.trim(); if(!t) return toast('Írd le a jelet.'); it.signs = it.signs||[]; it.signs.unshift({date:dKey(), text:t}); addJournal('sign','Jel', t); mark('jel'); toast('Jel rögzítve. 🔆'); draw(); });
+  };
+  sheet('Jelek napló',''); draw();
+}
+function openQuestions(){
+  const it = mainInt(); const r = ROUTES[it?it.route:''];
+  const qs = [...(r?r.q:[]), ...GEN_Q];
+  let i = 0;
+  sheet('Kérdés-blokk', `<p class="muted">A nyitott kérdés kinyitja a figyelmet. Ráérsz a válasszal: tedd fel a kérdést, és figyeld, mi érkezik a nap folyamán.</p>
+  <div class="card gold"><p class="quote" id="qT"></p><div class="small" id="qN"></div></div>
+  <div class="row" style="gap:.6rem"><button class="btn ghost" id="qSay">🔈 Felolvasás</button><button class="btn" style="flex:1" id="qNext">Következő kérdés</button></div>
+  <label>Ami most érkezik (nem kötelező)</label><textarea id="qA" style="min-height:90px"></textarea>
+  <button class="btn block soft" id="qS" style="margin-top:.6rem">Mentés a naplóba</button>`);
+  const draw = () => { $('#qT').textContent = qs[i]; $('#qN').textContent = `${i+1} / ${qs.length}`; };
+  draw();
+  $('#qNext').addEventListener('click',()=>{ i=(i+1)%qs.length; draw(); });
+  $('#qSay').addEventListener('click',()=>speakOne(qs[i]));
+  $('#qS').addEventListener('click',()=>{ const a=$('#qA').value.trim(); if(!a) return toast('Írj néhány szót.'); addJournal('note', qs[i], a); $('#qA').value=''; toast('Mentve.'); });
+}
+function open369(){
+  const it = mainInt(); const k = dKey();
+  const rec = S.m369[k] = S.m369[k] || {r:0,d:0,e:0};
+  const text = (it && it.aff) || '';
+  const blocks = [['r','Reggel',3],['d','Délután',6],['e','Este',9]];
+  const draw = () => {
+    $('#shBody').innerHTML = `<p class="muted">Írd le a mondatodat reggel 3-szor, délután 6-szor, este 9-szer. A Tesla-eredet legenda, de a módszer jól működik figyelemfókuszként: a nap során háromszor visszatérsz a szándékodhoz.</p>
+    <label>A mondatod</label><input id="m3T" value="${esc(rec.text||text)}" placeholder="pl. Bőség és biztonság áramlik az életembe.">${negBox('m3N')}
+    ${blocks.map(([b,n,max])=>`<div class="card" style="margin-top:1rem"><div class="row between"><h3 style="margin:0">${n}</h3><span class="pill">${rec[b]}/${max}</span></div><div class="dots" style="margin:.6rem 0">${Array.from({length:max},(_,j)=>`<span class="${j<rec[b]?'on':''}"></span>`).join('')}</div>${rec[b]<max?`<input class="m3I" data-b="${b}" placeholder="Írd le a mondatot…"><button class="btn sm soft" style="margin-top:.5rem" data-ok="${b}">Leírtam</button>`:'<div class="small">✓ Kész</div>'}</div>`).join('')}`;
+    wireNeg('m3T','m3N');
+    $('#m3T').addEventListener('change',e=>{ rec.text=e.target.value.trim(); save(); });
+    $$('[data-ok]').forEach(btn=>btn.addEventListener('click',()=>{ const b=btn.dataset.ok, inp=$(`.m3I[data-b="${b}"]`); if(!inp.value.trim()) return toast('Írd le a mondatot.'); rec[b]++; rec.text=$('#m3T').value.trim(); save(); if(rec.r>=3&&rec.d>=6&&rec.e>=9){ mark('szandek'); addJournal('m369','369 kész', rec.text); chime(); toast('Ma teljes a 369! ✨'); } draw(); setTimeout(()=>{ const n=$(`.m3I[data-b="${b}"]`); n&&n.focus(); },50); }));
+  };
+  sheet('369-es írás',''); draw();
+}
+function open55(){
+  const it = mainInt();
+  if(!S.m55) S.m55 = {text:(it&&it.aff)||'', start:dKey(), days:{}};
+  const M = S.m55;
+  const draw = () => {
+    const k = dKey(), n = M.days[k]||0;
+    const dayNo = Math.floor((new Date(k) - new Date(M.start))/86400000)+1;
+    $('#shBody').innerHTML = `<p class="muted">Egy mondat, naponta 55-ször leírva vagy kimondva, 5 napon át. Rövid, intenzív fókusz-kihívás.</p>
+    <label>A mondatod</label><input id="m5T" value="${esc(M.text)}">${negBox('m5N')}
+    <div class="card gold" style="margin-top:1rem;text-align:center"><div class="small">${dayNo<=5?dayNo+'. nap / 5':'A kihívás véget ért'}</div><div style="font-family:Cormorant Garamond,serif;font-size:3.2rem;color:var(--gold2);line-height:1.1">${n}<span style="font-size:1.4rem">/55</span></div><div class="prog"><i style="width:${Math.min(100,n/55*100)}%"></i></div></div>
+    <div class="dots" style="justify-content:center;margin:.6rem 0">${[0,1,2,3,4].map(i=>{const dk=addDays(M.start,i);return `<span class="${(M.days[dk]||0)>=55?'on':''}"></span>`}).join('')}</div>
+    <button class="btn block" id="m5P" ${n>=55?'disabled':''}>Leírtam / kimondtam (+1)</button>
+    <button class="btn block ghost" id="m5R" style="margin-top:.6rem">Kihívás újrakezdése mától</button>`;
+    wireNeg('m5T','m5N');
+    $('#m5T').addEventListener('change',e=>{ M.text=e.target.value.trim(); save(); });
+    $('#m5P').addEventListener('click',()=>{ M.days[k]=(M.days[k]||0)+1; if(M.days[k]===55){ mark('szandek'); chime(); toast('Mai 55 kész! ✨'); } save(); draw(); });
+    $('#m5R').addEventListener('click',()=>{ if(confirm('Újrakezded mától?')){ M.start=dKey(); M.days={}; save(); draw(); } });
+  };
+  sheet('55×5 kihívás',''); draw();
+}
+
+/* ---------- Vision board ---------- */
+function openVision(){
+  const draw = () => {
+    $('#shBody').innerHTML = `<p class="muted">Tegyél fel képeket a <b>célról</b> és az <b>útról</b> is – a kutatás szerint az út képe adja a lendületet a cselekvéshez.</p>
+    <div class="row" style="gap:.5rem;margin-bottom:1rem"><button class="btn sm soft" data-k="cel" style="flex:1">+ Cél képe</button><button class="btn sm soft" data-k="ut" style="flex:1">+ Az út képe</button></div>
+    <input type="file" accept="image/*" id="vbF" class="hide">
+    ${S.vision.length?`<div class="vb">${S.vision.map(v=>`<div class="it">${v.img?`<img src="${v.img}" alt="">`:''}<span class="pill k">${v.kind==='cel'?'Cél':'Út'}</span><button class="x" data-x="${v.id}" aria-label="Törlés">✕</button><div class="cap">${esc(v.text||'')}</div></div>`).join('')}</div>`:'<div class="empty">Az első képed vár.</div>'}`;
+    let kind='cel';
+    $$('[data-k]').forEach(b=>b.addEventListener('click',()=>{ kind=b.dataset.k; $('#vbF').click(); }));
+    $('#vbF').addEventListener('change', async e=>{ const f=e.target.files[0]; if(!f) return; const img = await shrink(f, 700); const text = prompt(kind==='cel'?'Mit jelent számodra ez a kép? (rövid felirat)':'Melyik lépést mutatja ez a kép?') || ''; S.vision.push({id:uid(), kind, img, text}); if(save()) draw(); else S.vision.pop(); });
+    $$('[data-x]').forEach(b=>b.addEventListener('click',()=>{ S.vision=S.vision.filter(v=>v.id!==b.dataset.x); save(); draw(); }));
+  };
+  sheet('Vision board',''); draw();
+}
+function shrink(file, max){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>{ const s=Math.min(1,max/Math.max(im.width,im.height)); const c=document.createElement('canvas'); c.width=Math.round(im.width*s); c.height=Math.round(im.height*s); c.getContext('2d').drawImage(im,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',.72)); }; im.src=r.result; }; r.readAsDataURL(file); }); }
+
+/* ---------- Megosztható kártya ---------- */
+function openShare(){
+  const it = mainInt();
+  sheet('Megosztható kártya', `<p class="muted">Készíts egy képet a mai affirmációdról – háttérképnek vagy megosztásra.</p>
+  <label>A szöveg</label><textarea id="shT" style="min-height:80px">${esc(it&&it.aff?it.aff:'Bőség, béke és szeretet áramlik az életembe.')}</textarea>
+  <canvas id="shC" width="1080" height="1350" style="width:100%;border-radius:18px;margin-top:1rem;border:1px solid var(--line)"></canvas>
+  <a class="btn block" id="shD" download="teremto-hold.png" style="margin-top:.8rem;text-decoration:none">Kép letöltése</a>`);
+  const drawC = () => {
+    const c=$('#shC'), x=c.getContext('2d'), W=1080, H=1350, m=moon();
+    const g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,'#3d2266'); g.addColorStop(.55,'#1d1133'); g.addColorStop(1,'#120a22'); x.fillStyle=g; x.fillRect(0,0,W,H);
+    for(let i=0;i<120;i++){ const sx=(Math.sin(i*91.7)*.5+.5)*W, sy=(Math.cos(i*47.3)*.5+.5)*H*.7; x.fillStyle=`rgba(255,240,200,${.15+((i*37)%10)/25})`; x.beginPath(); x.arc(sx,sy,(i%3)+1,0,7); x.fill(); }
+    x.save(); x.translate(W/2-150,170); x.beginPath(); x.arc(150,150,148,0,Math.PI*2); x.fillStyle='#2b1b46'; x.fill(); x.strokeStyle='rgba(243,213,140,.4)'; x.lineWidth=2; x.stroke(); const mgr=x.createRadialGradient(120,105,10,150,150,150); mgr.addColorStop(0,'#fff3cf'); mgr.addColorStop(1,'#f3d58c'); x.fillStyle=mgr; x.fill(new Path2D(moonPath(m.age,300))); x.restore();
+    const text=()=>{ x.textAlign='center'; x.fillStyle='#f3d58c'; x.font='600 44px "Cormorant Garamond", Georgia, serif'; x.fillText(m.name.toUpperCase(), W/2, 560);
+      x.fillStyle='#f4eeff'; x.font='italic 600 66px "Cormorant Garamond", Georgia, serif';
+      const words=('„'+$('#shT').value.trim()+'”').split(' '); let line='', y=720, lines=[]; words.forEach(w=>{ const t=line?line+' '+w:w; if(x.measureText(t).width>880){ lines.push(line); line=w; } else line=t; }); lines.push(line); y = 760 - (lines.length-1)*42; lines.forEach(l=>{ x.fillText(l, W/2, y); y+=84; });
+      x.fillStyle='rgba(243,213,140,.8)'; x.font='600 34px Mulish, sans-serif'; x.fillText('TEREMTŐ HOLD · aranyhold.hu', W/2, H-90);
+      $('#shD').href = c.toDataURL('image/png'); };
+      text(); };
+  $('#shT').addEventListener('input', drawC); drawC();
+}
+
+/* =========================================================
+   KÉRDÉS-ÚT – 9 állomás (IBAR-elemek + Access Consciousness ihlette kérdések)
+   ========================================================= */
+const ACCESS_Q = [
+  'Mi kellene ahhoz, hogy ez még könnyebben megérkezzen hozzám?',
+  'Mi minden lehetséges még, amire most kérdezek rá először?',
+  'Hogyan lehetne ez ennél is jobb?',
+  'Milyen energiát, teret és tudatosságot választhatok, hogy ez könnyedén megvalósuljon?',
+  'Mit tudok erről legbelül, amit most megengedek magamnak észrevenni?',
+  'Mi az, ami ebben most igazán könnyű?',
+  'Ha bármit választhatnék, mit választanék most?'
+];
+const BODY_PLACES = ['Mellkas','Has','Torok','Váll','Fej','Hát','Kéz','Egész test'];
+const STATIONS = [
+  {k:'erkezes', t:'Megérkezés', tag:'IBAR'},
+  {k:'tiszta', t:'Tisztánlátás', tag:'mélyítés'},
+  {k:'konnyu', t:'Könnyű vagy nehéz?', tag:'Access ihlette'},
+  {k:'kie', t:'Kié ez a gondolat?', tag:'Access ihlette'},
+  {k:'nyito', t:'Nyitó kérdések', tag:'Access ihlette'},
+  {k:'oldas', t:'Oldás', tag:'IBAR'},
+  {k:'horgony', t:'Testi horgony', tag:'IBAR'},
+  {k:'valasztas', t:'Választás', tag:'WOOP'},
+  {k:'lezaras', t:'Lezárás', tag:'hála'}
+];
+function openJourney(){
+  const it = mainInt(), r = ROUTES[it ? it.route : ''] || ROUTES.onertek;
+  const J = {act:5, actAfter:null, place:[], wish: it ? it.wish : '', g1:'', g2:'', g3:'', light:{}, thoughts:[], ans:{}, belief:'', newChoice: it ? (it.affBase||it.aff||'') : '', before:6, after:null, anchor:[], choice:'', ha:'', akkor:'', toInt:true, thanks:''};
+  let st = 0;
+  const range = (id, val, lo, hi) => `<div class="rg"><input type="range" id="${id}" min="0" max="10" value="${val}"><div class="row between small"><span>0 · ${lo}</span><b id="${id}V" class="gold" style="font-size:1.3rem">${val}</b><span>${hi} · 10</span></div></div>`;
+  const chipsHtml = (arr, sel, attr) => `<div class="chips">${arr.map(x=>`<button class="chip ${sel.includes(x)?'on':''}" data-${attr}="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;
+  const statements = () => [J.wish || 'Ez a szándék valóban az enyém.', 'Ezt valóban én szeretném – a saját szívemből.', 'Ez most lehetséges számomra.', 'Készen állok fogadni.', 'Megérdemlem, hogy ez megérkezzen.', 'Biztonságos számomra, hogy ez megvalósuljon.'];
+  const qs = () => [...r.q.slice(0,2), ...ACCESS_Q];
+
+  const draw = () => {
+    const S0 = STATIONS[st];
+    let h = `<div class="dots" style="margin-bottom:.5rem">${STATIONS.map((x,i)=>`<span class="${i<=st?'on':''}"></span>`).join('')}</div>
+      <div class="row between"><span class="small">${st+1}. állomás / ${STATIONS.length}</span><span class="pill muted">${S0.tag}</span></div>
+      <h3 style="margin-top:.4rem">${S0.t}</h3>`;
+    if(S0.k==='erkezes'){
+      h += `<p class="muted">Mielőtt kérdezünk, megérkezel a testedbe. A szabályozott idegrendszer nyitottabb a válaszokra – ezért kezdünk itt.</p>
+      <label>Hol érzed most leginkább a testedben, ami benned van?</label>${chipsHtml(BODY_PLACES, J.place, 'pl')}
+      <label>Mennyire vagy most feszült?</label>${range('jAct', J.act, 'nyugalom', 'nagy feszültség')}
+      <div id="jReg" class="card ${J.act>=6?'':'hide'}" style="margin-top:.8rem"><b>IBAR-elsősegély</b><p class="small">Hozzuk le a feszültséget, mielőtt továbbmegyünk: 4 másodperc belégzés, 4 tartás, 6 kilégzés, hat körön át. A hosszabb kilégzés a megnyugvás jelzése a testnek.</p><div id="jMB"></div><button class="btn sm soft" id="jMBgo">Légzés indítása (1,5 perc)</button></div>`;
+    } else if(S0.k==='tiszta'){
+      h += `<p class="muted">A vágy mögött mindig egy mélyebb érzés áll. Háromszor kérdezünk rá, rétegről rétegre.</p>
+      <label>Mit szeretnél valójában?</label><textarea id="jWish" style="min-height:80px">${esc(J.wish)}</textarea>${negBox('jWN')}
+      <label>Ha ez már megvolna, mit adna neked?</label><input id="jG1" value="${esc(J.g1)}" placeholder="pl. biztonságot">
+      <label>És ha az megvolna, az mit adna?</label><input id="jG2" value="${esc(J.g2)}" placeholder="pl. nyugalmat">
+      <label>És ami még ennél is mélyebb?</label><input id="jG3" value="${esc(J.g3)}" placeholder="pl. szabadságot, hogy önmagam legyek">
+      <div class="note">A legmélyebb válasz gyakran egy érzés. Ez a szándékod igazi magja – és ezt már ma is táplálhatod.</div>`;
+    } else if(S0.k==='konnyu'){
+      h += `<p class="muted">Az Access Consciousness egyik eszköze: ami igaz számodra, az a testben <b>könnyűnek</b> érződik, ami idegen, az <b>nehéznek</b>. Olvasd el lassan mindegyik mondatot, figyeld a tested első válaszát, és koppints.</p>
+      ${statements().map((s,i)=>`<div class="card" style="padding:.9rem"><p style="margin:0 0 .6rem">${esc(s)}</p><div class="tiles t2s"><button class="tile mini ${J.light[i]==='k'?'pick':''}" data-li="${i}" data-v="k"><span class="ti">🪶</span><span class="tt">Könnyű</span></button><button class="tile mini ${J.light[i]==='n'?'pick':''}" data-li="${i}" data-v="n"><span class="ti">🪨</span><span class="tt">Nehéz</span></button></div></div>`).join('')}
+      <div class="note">Ahol nehezet érzel, ott van a következő állomások anyaga. Ez értékes információ – a test így mutatja meg, hol érdemes oldani.</div>`;
+    } else if(S0.k==='kie'){
+      h += `<p class="muted">Írd le, milyen gondolatok jönnek, amikor a vágyadra gondolsz – a kételkedőket is. Aztán kérdezd meg mindegyiknél: <b>Kié ez?</b> Sokszor a szüleink, a környezetünk hangja szól belőlünk.</p>
+      <div class="row" style="gap:.5rem"><input id="jTh" placeholder="pl. Ez nekem túl sok lenne."><button class="btn sm" id="jThAdd">+</button></div>
+      <div id="jThL" style="margin-top:.8rem">${J.thoughts.length?J.thoughts.map((t,i)=>`<div class="card" style="padding:.8rem"><p style="margin:0 0 .5rem">„${esc(t.t)}”</p><div class="chips">${[['en','Az enyém'],['mas','Valaki másé'],['keres','Még keresem']].map(([v,n])=>`<button class="chip ${t.o===v?'on':''}" data-ti="${i}" data-o="${v}">${n}</button>`).join('')}</div>${t.o==='mas'?`<p class="small gold" style="margin:.4rem 0 0">Visszaküldöm a feladónak, szeretettel. Köszönöm, ez az övé – és én szabad vagyok.</p>`:''}</div>`).join(''):'<div class="small">Az első gondolat jöhet.</div>'}</div>`;
+    } else if(S0.k==='nyito'){
+      h += `<p class="muted">Access-stílusú nyitott kérdések. A kérdés kinyit, a válasz lezár – ezért most kíváncsi maradsz. Kérdezd meg magadtól, figyeld, mi érkezik, és ha jólesik, írd le.</p>
+      ${qs().map((q,i)=>`<div class="card" style="padding:.9rem"><p class="quote" style="font-size:1.15rem;margin:0 0 .5rem">${esc(q)}</p><div class="row" style="gap:.5rem"><input data-qa="${i}" value="${esc(J.ans[i]||'')}" placeholder="ami érkezik…"><button class="icon-btn" data-say="${i}" aria-label="Felolvasás">🔈</button></div></div>`).join('')}`;
+    } else if(S0.k==='oldas'){
+      const heavy = J.thoughts.filter(t=>t.o!=='mas').map(t=>t.t);
+      h += `<p class="muted">Válaszd ki azt a gondolatot, ami a legnehezebb, és figyeld meg, hol él a testedben. Az oldó szöveg elismeri, megköszöni és szabadon engedi – a test nyelvén.</p>
+      ${heavy.length?`<div class="chips">${heavy.map(t=>`<button class="chip ${J.belief===t?'on':''}" data-bl="${esc(t)}">${esc(short(t,40))}</button>`).join('')}</div>`:''}
+      <label>A nehéz gondolat</label><input id="jBel" value="${esc(J.belief)}" placeholder="pl. Ez nekem túl sok lenne.">
+      <label>Milyen erős most a testedben? (oldás előtt)</label>${range('jBef', J.before, 'csendes', 'nagyon erős')}
+      <label>Mit választasz helyette?</label><input id="jNew" value="${esc(J.newChoice)}" placeholder="pl. Megengedem, hogy ez könnyen jöjjön.">${negBox('jNN')}
+      <div class="card gold" style="margin-top:1rem"><b>Oldó szöveg</b><p id="jRel" style="margin:.5rem 0 .8rem;white-space:pre-line"></p><button class="btn sm soft" id="jRelSay">🔈 Felolvasás</button></div>
+      <p class="small">Olvasd el vagy hallgasd meg kétszer, lassan, a kezed azon a testrészen, ahol a gondolatot érzed.</p>
+      <label>Milyen erős most? (oldás után)</label>${range('jAft', J.after ?? J.before, 'csendes', 'nagyon erős')}
+      <div id="jDelta" class="note hide"></div>`;
+    } else if(S0.k==='horgony'){
+      h += `<p class="muted">Az új választást a testben is rögzítjük. A test emlékszik – így napközben egyetlen érintéssel visszatalálsz ide.</p>
+      <label>Hol érzed a testedben az új választást?</label>${chipsHtml(BODY_PLACES, J.anchor, 'an')}
+      <p>Tedd oda a kezed. Mondd magadban: <b class="gold">„${esc(J.newChoice || 'Választom.')}”</b> – és lélegezz három kört.</p>
+      <div id="jMB2"></div><button class="btn sm soft" id="jMB2go">3 kör 4-4-6 légzés</button>
+      <div class="note">Napközben, ha szükséged van rá: kéz ugyanoda, egy mély kilégzés, és ugyanez a mondat. Ez a te horgonyod.</div>`;
+    } else if(S0.k==='valasztas'){
+      h += `<p class="muted">A kérdések kinyitottak, az oldás teret adott. Most egy konkrét választás következik – a gondolat irányt ad, a lépés visz előre.</p>
+      <label>Mit választok ma, ami ezt táplálja?</label><input id="jCh" value="${esc(J.choice)}" placeholder="pl. Írok egy üzenetet annak, aki segíthet.">${negBox('jCN')}
+      <label>Ha…</label><input id="jHa" value="${esc(J.ha)}" placeholder="${esc(r.ex.ha)}">
+      <label>…akkor</label><input id="jAk" value="${esc(J.akkor)}" placeholder="${esc(r.ex.akkor)}">
+      ${it?`<label class="check" style="margin-top:.8rem"><input type="checkbox" id="jToInt" ${J.toInt?'checked':''}> Legyen ez a fő szándékom új ha-akkor terve</label>`:''}`;
+    } else {
+      const lightN = Object.values(J.light).filter(v=>v==='k').length, heavyN = Object.values(J.light).filter(v=>v==='n').length;
+      h += `<div class="card gold">
+        <p><b>A vágy magja:</b> ${esc(J.g3 || J.g2 || J.g1 || J.wish || '–')}</p>
+        <p><b>Könnyű / nehéz:</b> ${lightN} könnyű, ${heavyN} nehéz mondat</p>
+        <p><b>Visszaküldött gondolatok:</b> ${J.thoughts.filter(t=>t.o==='mas').length}</p>
+        ${J.after!=null?`<p><b>Oldás:</b> ${J.before} → ${J.after}</p>`:''}
+        <p><b>Az új választás:</b> ${esc(J.newChoice || '–')}</p>
+        <p style="margin:0"><b>A mai lépés:</b> ${esc(J.choice || (J.akkor ? 'Ha '+J.ha+', akkor '+J.akkor : '–'))}</p>
+      </div>
+      <label>Egy mondat hála ezért az útért</label><input id="jTk" value="${esc(J.thanks)}" placeholder="Hálás vagyok, mert…">
+      <div class="note">Az Access szellemében kérdéssel zárunk: <b>„Mi kellene még ahhoz, hogy ez még könnyebb legyen?”</b> Vidd magaddal a napodba – a válasz útközben érkezik.</div>
+      <p class="small">Érezd a talpad, a súlyod, a lélegzeted. Visszaérkeztél.</p>`;
+    }
+    h += `<div class="row" style="gap:.6rem;margin-top:1.3rem">${st>0?`<button class="btn ghost" id="jBack">Vissza</button>`:''}<button class="btn" style="flex:1" id="jNext">${st===STATIONS.length-1?'Mentés és lezárás':'Tovább'}</button></div>`;
+    $('#shBody').innerHTML = h; $('#shBody').scrollTop = 0;
+
+    // közös bekötések
+    $$('#shBody input[type=range]').forEach(x=>x.addEventListener('input',()=>{ $('#'+x.id+'V').textContent = x.value; }));
+    $$('#shBody [data-pl]').forEach(b=>b.addEventListener('click',()=>{ const v=b.dataset.pl; J.place = J.place.includes(v)?J.place.filter(x=>x!==v):[...J.place,v]; b.classList.toggle('on'); }));
+    $$('#shBody [data-an]').forEach(b=>b.addEventListener('click',()=>{ const v=b.dataset.an; J.anchor = J.anchor.includes(v)?J.anchor.filter(x=>x!==v):[...J.anchor,v]; b.classList.toggle('on'); }));
+    if(S0.k==='erkezes'){
+      $('#jAct').addEventListener('input', e => $('#jReg').classList.toggle('hide', +e.target.value < 6));
+      $('#jMBgo').addEventListener('click',()=>{ $('#jMBgo').classList.add('hide'); miniBreath($('#jMB'), 6, ()=>{ $('#jMB').insertAdjacentHTML('beforeend','<p class="small" style="text-align:center">Nézd meg újra: mennyi most a feszültség? Állítsd be a csúszkán.</p>'); }); });
+    }
+    wireNeg('jWish','jWN'); wireNeg('jNew','jNN'); wireNeg('jCh','jCN');
+    $$('#shBody [data-li]').forEach(b=>b.addEventListener('click',()=>{ J.light[b.dataset.li]=b.dataset.v; draw(); }));
+    if(S0.k==='kie'){
+      const add = () => { const v=$('#jTh').value.trim(); if(!v) return; J.thoughts.push({t:v,o:''}); draw(); setTimeout(()=>$('#jTh')&&$('#jTh').focus(),30); };
+      $('#jThAdd').addEventListener('click', add); $('#jTh').addEventListener('keydown', e=>{ if(e.key==='Enter') add(); });
+      $$('#shBody [data-ti]').forEach(b=>b.addEventListener('click',()=>{ J.thoughts[+b.dataset.ti].o=b.dataset.o; draw(); }));
+    }
+    $$('#shBody [data-say]').forEach(b=>b.addEventListener('click',()=>speakOne(qs()[+b.dataset.say])));
+    if(S0.k==='oldas'){
+      const rel = () => { const b = $('#jBel').value.trim() || 'ez a gondolat', n = $('#jNew').value.trim() || 'a könnyedséget és a bizalmat';
+        $('#jRel').textContent = `Észreveszem ezt a gondolatot: „${b}”.\nÉrzem, hol él a testemben, és megengedem, hogy most ott legyen.\nMegköszönöm, hogy eddig vigyázni próbált rám.\nMost már választhatok.\nSzabadon engedem – a testem minden sejtjéből, minden időből és minden helyről.\nA helyére ezt választom: „${n}”.`; };
+      $$('#shBody [data-bl]').forEach(b=>b.addEventListener('click',()=>{ $('#jBel').value=b.dataset.bl; J.belief=b.dataset.bl; $$('#shBody [data-bl]').forEach(x=>x.classList.toggle('on',x===b)); rel(); }));
+      $('#jBel').addEventListener('input', rel); $('#jNew').addEventListener('input', rel); rel();
+      $('#jRelSay').addEventListener('click',()=>{ if(TTS.has()) TTS.run($('#jRel').textContent.split('\n').map(t=>({t,p:2}))); else toast('A felolvasás a Beállításokban kapcsolható be.'); });
+      const delta = () => { const a=+$('#jAft').value, b=+$('#jBef').value; const el=$('#jDelta'); if(a<b){ el.textContent=`A feszültség ${b}-ról ${a}-ra csökkent. A tested már válaszol. 🌿`; el.classList.remove('hide'); } else el.classList.add('hide'); };
+      $('#jAft').addEventListener('input',()=>{ J.after=+$('#jAft').value; delta(); }); $('#jBef').addEventListener('input', delta);
+    }
+    if(S0.k==='horgony') $('#jMB2go').addEventListener('click',()=>{ $('#jMB2go').classList.add('hide'); miniBreath($('#jMB2'), 3); });
+
+    const collect = () => {
+      if(S0.k==='erkezes') J.act = +$('#jAct').value;
+      if(S0.k==='tiszta'){ J.wish=$('#jWish').value.trim(); J.g1=$('#jG1').value.trim(); J.g2=$('#jG2').value.trim(); J.g3=$('#jG3').value.trim(); }
+      if(S0.k==='nyito') $$('#shBody [data-qa]').forEach(x=>{ J.ans[x.dataset.qa]=x.value.trim(); });
+      if(S0.k==='oldas'){ J.belief=$('#jBel').value.trim(); J.newChoice=$('#jNew').value.trim(); J.before=+$('#jBef').value; }
+      if(S0.k==='valasztas'){ J.choice=$('#jCh').value.trim(); J.ha=$('#jHa').value.trim(); J.akkor=$('#jAk').value.trim(); J.toInt = $('#jToInt') ? $('#jToInt').checked : false; }
+      if(S0.k==='lezaras') J.thanks=$('#jTk').value.trim();
+    };
+    $('#jBack') && $('#jBack').addEventListener('click',()=>{ TTS.stop(); clearTimeout(window._bt); collect(); st--; draw(); });
+    $('#jNext').addEventListener('click',()=>{
+      TTS.stop(); clearTimeout(window._bt); collect();
+      if(st < STATIONS.length-1){ st++; return draw(); }
+      if(it && J.toInt && J.ha && J.akkor){ it.ha=J.ha; it.akkor=J.akkor; }
+      const qList = qs(); const answered = Object.entries(J.ans).filter(([,v])=>v).map(([i,v])=>`– ${qList[i]} → ${v}`).join('\n');
+      const txt = [`A vágy: ${J.wish}`, `A mag: ${[J.g1,J.g2,J.g3].filter(Boolean).join(' → ')}`, J.thoughts.length?`Gondolatok: ${J.thoughts.map(t=>`„${t.t}” (${t.o==='mas'?'visszaküldve':t.o==='en'?'az enyém':'keresem'})`).join('; ')}`:'', answered?`Kérdések:\n${answered}`:'', J.belief?`Oldás: „${J.belief}” → „${J.newChoice}” (${J.before} → ${J.after ?? J.before})`:'', J.anchor.length?`Horgony: ${J.anchor.join(', ')}`:'', J.choice?`Választás: ${J.choice}`:'', J.akkor?`Ha ${J.ha}, akkor ${J.akkor}`:'', J.thanks?`Hála: ${J.thanks}`:''].filter(Boolean).join('\n');
+      addJournal('kerdesut','Kérdés-út', txt); mark('szandek'); if(J.thanks){ const d=day(); d.hala=[...(d.hala||[]), J.thanks]; d.steps.hala=true; save(); }
+      chime(); toast('A Kérdés-út elmentve a naplódba. 🗝️'); closeSheet();
+    });
+  };
+  sheet('Kérdés-út',''); draw();
+}
+
+/* ---------- Elakadtam (SOS) ---------- */
+const SOS = {
+  ketseg:{n:'Kétség', e:'🌫️', ibar:'Tedd a kezed a mellkasodra. A kétség a test óvó hangja – most megnyugtatod, aztán kérdezel.',
+    q:['Mi lenne, ha ez a kétség csak egy régi szokás hangja lenne?','Mi az, amit már most is biztosan tudok?','Milyen apró bizonyítékot láttam már arra, hogy úton vagyok?','Mi kellene ahhoz, hogy a bizalom ma könnyebb legyen?'],
+    rel:'Észreveszem a kétséget. Megköszönöm, hogy vigyázni próbál rám. Most a bizalmat választom, lépésről lépésre.', step:'Írj le egy jelet az elmúlt hétből, ami azt mutatja, hogy haladsz.'},
+  felelem:{n:'Félelem', e:'🌪️', ibar:'Érezd a talpad a földön. Nevezz meg magadban 5 dolgot, amit látsz, 4-et, amit hallasz, 3-at, amit a bőrödön érzel.',
+    q:['Mit próbál megvédeni bennem ez a félelem?','Mi kellene ahhoz, hogy biztonságban érezzem magam ebben a helyzetben?','Ha a bátorságnak színe lenne, milyen lenne most?','Mi a legkisebb lépés, ami most is biztonságos?'],
+    rel:'Látlak, félelem. Köszönöm, hogy őrködsz. Most én vezetek, te pihenhetsz. Ebben a pillanatban biztonságban vagyok.', step:'Tedd meg még ma a legkisebb, biztonságos lépést.'},
+  turelem:{n:'Türelmetlenség', e:'⏳', ibar:'Lassítsd a kilégzést, hogy hosszabb legyen a belégzésnél. A test ebből érti meg, hogy van idő.',
+    q:['Mi minden érik már a háttérben, amit hamarosan meglátok?','Hogyan élvezhetném az utat is, ma?','Mi lenne, ha a megfelelő idő éppen most kezdődne?','Mit tehetek ma, ami természetes módon közelebb visz?'],
+    rel:'Elengedem a sürgetést. A dolgok a saját idejükben érnek be, én pedig közben is teljes életet élek.', step:'Csinálj ma egy dolgot pusztán az örömért.'},
+  osszehas:{n:'Összehasonlítás', e:'🪞', ibar:'Fordítsd a figyelmed befelé: érezd a saját lélegzeted ritmusát, a saját szívverésedet.',
+    q:['Mit mutat meg nekem az, amit a másikban látok?','Ha az ő sikere bizonyíték arra, hogy ez lehetséges, mit jelent ez számomra?','Mi az én egyedi utam ebben?','Mit ünnepelhetek ma a saját életemben?'],
+    rel:'Az ő útja az övé, az enyém az enyém. Örülök annak, ami neki megérkezett – ez bizonyíték arra, hogy nekem is lehetséges.', step:'Írj le 3 dolgot, amiben haladtál az elmúlt hónapban.'},
+  faradt:{n:'Fáradtság', e:'😴', ibar:'Engedd, hogy a vállad leereszkedjen. Ma a pihenés a feladatod – a szabályozott test többet teremt.',
+    q:['Mire vágyik most igazán a testem?','Mit tehetek le ma, hogy legyen erőm arra, ami fontos?','Ki segíthetne nekem ma?','Hogyan lehetne a pihenés is a teremtés része?'],
+    rel:'Megengedem magamnak a pihenést. Az erőm visszatér, és a szándékom közben is érik.', step:'Feküdj le 10 percre, és csak lélegezz.'},
+  araszt:{n:'Elárasztva', e:'🌊', ibar:'Tedd egyik kezed a homlokodra, a másikat a tarkódra. Lélegezz lassan, és engedd, hogy a fejedben csend legyen.',
+    q:['Mi az egyetlen dolog, ami most igazán fontos?','Mi várhat holnapig?','Mi kellene ahhoz, hogy ez könnyebb legyen?','Kitől kérhetek ma segítséget?'],
+    rel:'Egyszerre egy dolog. Most csak ezt az egyet választom, a többi megvárhat.', step:'Írd le az egyetlen következő lépést, és csak azt tedd meg.'}
+};
+function openSOS(topic){
+  if(!topic){
+    sheet('Elakadtam', `<p class="muted">Mi van most benned? Válaszd ki, és 3 percben végigvezetlek: előbb a test (IBAR), aztán a kérdések, végül egy oldó mondat és egy kis lépés.</p>
+    <div class="tiles">${Object.entries(SOS).map(([k,v])=>`<button class="tile" data-sos="${k}"><span class="ti">${v.e}</span><span class="tb"><span class="tt">${v.n}</span></span></button>`).join('')}</div>`);
+    return $$('#shBody [data-sos]').forEach(b=>b.addEventListener('click',()=>openSOS(b.dataset.sos)));
+  }
+  const T = SOS[topic]; let before = 6;
+  sheet(T.e+' '+T.n, `
+    <div class="card"><div class="row between"><b>1. A test megnyugtatása</b><span class="pill muted">IBAR</span></div><p>${T.ibar}</p>
+      <label style="margin-top:.4rem">Mennyire erős most?</label><div class="rg"><input type="range" id="soB" min="0" max="10" value="6"><div class="row between small"><span>0</span><b id="soBV" class="gold" style="font-size:1.3rem">6</b><span>10</span></div></div>
+      <div id="soMB"></div><button class="btn sm soft" id="soGo">4-4-6 légzés, 4 kör</button></div>
+    <div class="card"><div class="row between"><b>2. Kérdések</b><span class="pill muted">Access ihlette</span></div><p class="small">Kérdezd meg magadtól – a válasz ráér.</p>${T.q.map(q=>`<p class="quote" style="font-size:1.15rem;margin:.5rem 0">${esc(q)}</p>`).join('')}</div>
+    <div class="card gold"><b>3. Oldó mondat</b><p class="quote" style="font-size:1.25rem;margin:.5rem 0">${esc(T.rel)}</p><button class="btn sm soft" id="soSay">🔈 Felolvasás</button></div>
+    <div class="card"><b>4. Egy kis lépés</b><p>${esc(T.step)}</p></div>
+    <label>És most mennyire erős?</label><div class="rg"><input type="range" id="soA" min="0" max="10" value="6"><div class="row between small"><span>0</span><b id="soAV" class="gold" style="font-size:1.3rem">6</b><span>10</span></div></div>
+    <label>Ami most érkezett (nem kötelező)</label><textarea id="soT" style="min-height:70px"></textarea>
+    <button class="btn block" id="soS" style="margin-top:.8rem">Kész, mentés</button>
+    <div class="note">Ha a nehéz érzés tartósan veled marad, keress meg valakit, akiben megbízol, vagy egy szakembert. A támogatás elfogadása is erő.</div>`);
+  ['soB','soA'].forEach(id=>$('#'+id).addEventListener('input',e=>{ $('#'+id+'V').textContent=e.target.value; }));
+  $('#soGo').addEventListener('click',()=>{ $('#soGo').classList.add('hide'); miniBreath($('#soMB'), 4); });
+  $('#soSay').addEventListener('click',()=>speakOne(T.rel));
+  $('#soS').addEventListener('click',()=>{ const b=+$('#soB').value, a=+$('#soA').value, t=$('#soT').value.trim(); addJournal('sos', T.n+' – oldás', `${b} → ${a}${t?'\n'+t:''}`); mark('csend'); chime(); toast(a<b?'A tested már válaszol. 🌿':'Megérkeztél. Ez is lépés.'); closeSheet(); });
+}
+
+/* ---------- Fej-érintéses csend (Access Bars ihlette) ---------- */
+function openBars(){
+  const POS = [
+    {n:'Homlok', t:'Tedd két kezed ujjbegyeit finoman a homlokod közepére. Pihe-könnyű érintés, nyomás nélkül.'},
+    {n:'Halánték', t:'Vidd az ujjbegyeidet a halántékodra. Érezd, ahogy az arcod és az állkapcsod ellazul.'},
+    {n:'Fejtető', t:'Tedd a kezed a fejtetődre. Engedd, hogy a gondolatok lelassuljanak, mint a felhők.'},
+    {n:'Tarkó', t:'Tedd az ujjbegyeidet a koponyád alsó peremére, a tarkódra. Érezd, ahogy a nyakad elenged.'},
+    {n:'Homlok és tarkó', t:'Egyik kezed a homlokodon, a másik a tarkódon. Csak légy. Most csak a jelenlét számít.'}
+  ];
+  let sec = 60;
+  sheet('Fej-érintéses csend', `
+    <p class="muted">Az Access Bars kezelés ihlette, egyszerű önnyugtató gyakorlat. Öt érintési pont, pontonként ${sec} másodperc, nagyon könnyű, nyomás nélküli érintéssel. A csengő jelzi a váltást.</p>
+    <div class="chips" id="baL">${[30,60,90].map(s=>`<button class="chip ${s===sec?'on':''}" data-s="${s}">${s} mp / pont</button>`).join('')}</div>
+    <div class="card gold" style="text-align:center"><div style="font-size:2.4rem">🤲</div><h3 id="baN">Készen állsz?</h3><p id="baT">Ülj vagy feküdj kényelmesen.</p><div class="timer" id="baC"></div></div>
+    <button class="btn block" id="baGo">Indítás</button>
+    <div class="note">Az eredeti Access Bars a fej 32 pontján dolgozik, és képzett gyakorló végzi. Ha szeretnéd megtapasztalni, keress Bars-gyakorlót. Ez a gyakorlat a mindennapi elcsendesedést segíti, mielőtt kérdezel vagy szándékot állítasz. Kutatási bizonyíték egyelőre kevés van róla – élvezd a nyugalmat, amit ad.</div>`);
+  $$('#baL .chip').forEach(c=>c.addEventListener('click',()=>{ sec=+c.dataset.s; $$('#baL .chip').forEach(x=>x.classList.toggle('on',x===c)); }));
+  let run=false;
+  $('#baGo').addEventListener('click',()=>{
+    if(run){ run=false; clearInterval(window._bi); TTS.stop(); DRONE.stop(); $('#baGo').textContent='Indítás'; return; }
+    run=true; ac(); DRONE.start(); $('#baGo').textContent='Megállítás'; let p=0, left=sec;
+    const show = () => { $('#baN').textContent = `${p+1}. ${POS[p].n}`; $('#baT').textContent = POS[p].t; speakOne(POS[p].t); };
+    show();
+    clearInterval(window._bi); window._bi = setInterval(()=>{
+      left--; $('#baC').textContent = `${Math.floor(left/60)}:${pad(left%60)}`;
+      if(left<=0){ chime(); p++; if(p>=POS.length){ clearInterval(window._bi); run=false; DRONE.stop(); mark('csend'); $('#baN').textContent='Csend'; $('#baT').textContent='Maradj még egy kicsit ebben a térben. Mi kellene ahhoz, hogy ez a nyugalom egész nap veled legyen?'; $('#baC').textContent=''; $('#baGo').textContent='Újra'; return; } left=sec; show(); }
+    },1000);
+  });
+}
+
+/* ---------- Beállítások ---------- */
+function openSettings(){
+  const st = S.settings;
+  sheet('Beállítások', `
+  <label style="margin-top:0">Keresztneved</label><input id="seN" value="${esc(S.profile.name)}">
+  <label>Betűméret</label><div class="chips" id="seF">${[['','Normál'],['fs-l','Nagy'],['fs-xl','Extra nagy']].map(([v,n])=>`<button class="chip ${st.fs===v?'on':''}" data-v="${v}">${n}</button>`).join('')}</div>
+  <label class="check"><input type="checkbox" id="seV" ${st.voice?'checked':''}> Felolvasás (magyar hang)</label>
+  <label>Felolvasás tempója</label><input type="range" id="seR" min="0.6" max="1.2" step="0.05" value="${st.rate}" style="padding:0">
+  <button class="btn sm ghost" id="seT" style="margin-top:.5rem">Hang kipróbálása</button>
+  <label class="check" style="margin-top:1rem"><input type="checkbox" id="seS" ${st.sound?'checked':''}> Halk háttérhang a gyakorlatokhoz</label>
+  <button class="btn block" id="seSave" style="margin-top:1rem">Mentés</button>
+  <hr class="s">
+  <details><summary>A módszerről</summary>
+    <p class="small" style="margin-top:.6rem">A Teremtő Hold öt lépésből álló napi ívre épül: <b>Csend → Szándék → Átélés → Lépés → Hála</b>. A lépések mögött Joe Dispenza és Neville Goddard szemlélete és pszichológiai kutatások állnak: a szívkoherens légzés, a WOOP-módszer (vágy, kimenet, akadály, terv), a ha-akkor tervek, a folyamat-vizualizáció, a hálanapló és a „legjobb önmagam” írás.</p>
+    <p class="small">Az app önismereti eszköz. A belső munka és a konkrét lépések együtt hatnak – a gondolat irányt ad, a cselekvés visz előre. Egészségügyi és pénzügyi döntésekben mindig kérd ki szakember véleményét.</p>
+  </details>
+  <hr class="s">
+  <div class="row wrap" style="gap:.5rem"><button class="btn sm ghost" id="seE">Adatok mentése (fájl)</button><button class="btn sm ghost" id="seI">Adatok betöltése</button><input type="file" id="seIF" accept="application/json" class="hide"></div>
+  <p class="small" style="margin-top:.6rem">Minden adat csak ezen az eszközön tárolódik. Telefoncsere előtt mentsd ki.</p>
+  <button class="btn sm ghost" id="seX" style="margin-top:.6rem">Minden adat törlése</button>
+  <p class="small" style="margin-top:1.2rem;text-align:center">Teremtő Hold v1.1 · Aranyhold Akadémia · aranyhold.hu</p>`);
+  let fs = st.fs;
+  $$('#seF .chip').forEach(c=>c.addEventListener('click',()=>{ fs=c.dataset.v; $$('#seF .chip').forEach(x=>x.classList.toggle('on',x===c)); applyFs(fs); }));
+  $('#seT').addEventListener('click',()=>{ const v=S.settings.voice, r=S.settings.rate; S.settings.voice=true; S.settings.rate=+$('#seR').value; TTS.run([{t:'Belégzés… és kilégzés. Minden rendben van.',p:0}]); S.settings.voice=v; S.settings.rate=r; });
+  $('#seSave').addEventListener('click',()=>{ S.profile.name=$('#seN').value.trim(); Object.assign(S.settings,{voice:$('#seV').checked, rate:+$('#seR').value, sound:$('#seS').checked, fs}); save(); toast('Mentve.'); closeSheet(); });
+  $('#seE').addEventListener('click',()=>{ const b=new Blob([JSON.stringify(S)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`teremto-hold-mentes-${dKey()}.json`; a.click(); });
+  $('#seI').addEventListener('click',()=>$('#seIF').click());
+  $('#seIF').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!d.profile) throw 0; S=Object.assign(DEF(),d); save(); toast('Betöltve.'); closeSheet(); }catch(err){ toast('Ez a fájl nem olvasható.'); } }; r.readAsText(f); });
+  $('#seX').addEventListener('click',()=>{ if(confirm('Biztosan törlöd az összes adatot? Ez végleges.')){ LS.del(KEY); S=DEF(); closeSheet(); boot(); } });
+}
+function applyFs(fs){ document.documentElement.classList.remove('fs-l','fs-xl'); if(fs) document.documentElement.classList.add(fs); }
+$('#btnSettings').addEventListener('click', openSettings);
+
+/* ---------- Bevezető ---------- */
+function onboarding(){
+  const ob = $('#onboard'); ob.classList.remove('hide'); $('#app').style.display='none'; $('#tabs').classList.add('hide');
+  let st = 0, name = S.profile.name, route = '';
+  const draw = () => {
+    let h = `<div class="ob"><div style="display:grid;place-items:center;margin:.6rem 0 1rem">${moonSVG(moon().age, 110)}</div>`;
+    if(st===0) h += `<h1 style="text-align:center">Teremtő Hold</h1><p class="muted" style="text-align:center">Manifesztáció a csendből, a szándékon át a lépésig – a hold ritmusában.</p>
+      <div class="card gold"><h3>Így működik</h3><div class="steps">${[['Csend','Lecsendesíted az idegrendszered'],['Szándék','Megfogalmazod, mit teremtesz és miért'],['Átélés','Belülről éled át az utat és a célt'],['Lépés','Megteszed a mai kis lépést'],['Hála','Este hálát adsz és figyeled a jeleket']].map((x,i)=>`<div class="row"><div class="step" style="padding:.2rem;border:0;background:none"><div class="n">${i+1}</div></div><div><b>${x[0]}</b><div class="small">${x[1]}</div></div></div>`).join('')}</div></div>
+      <button class="btn block" id="obN">Kezdjük</button>`;
+    else if(st===1) h += `<h2>Hogyan szólíthatlak?</h2><input id="obName" value="${esc(name)}" placeholder="Keresztneved"><button class="btn block" id="obN" style="margin-top:1rem">Tovább</button>`;
+    else if(st===2) h += `<h2>Melyik terület hív most a legjobban?</h2><p class="muted">Később bármikor bővítheted.</p><div class="route-grid">${Object.entries(ROUTES).map(([k,v])=>`<button class="route ${route===k?'on':''}" data-r="${k}"><div class="e">${v.e}</div><div class="n">${v.n}</div><div class="s">${v.s}</div></button>`).join('')}</div><button class="btn block" id="obN" style="margin-top:1rem">Tovább</button>`;
+    else h += `<h2>Mielőtt elindulsz</h2>
+      <div class="card"><p>A Teremtő Hold a szellemi hagyományt (Joe Dispenza, Neville Goddard) és a pszichológiai kutatásokat ötvözi.</p>
+      <p>A gondolat irányt ad, a cselekvés visz előre – ezért minden szándékhoz tartozik egy konkrét lépés is.</p>
+      <p class="small">Az app önismereti eszköz. Egészségügyi, pénzügyi vagy lelki nehézségben mindig érdemes szakember támogatását is kérni – ez is az önszeretet része.</p></div>
+      <div class="card gold"><h3>Az első heted</h3><p class="small">7 napon át minden nap egy új eszközzel ismerkedsz meg, napi 10 percben. Utána a holdciklus-program vezet tovább.</p></div>
+      <button class="btn block" id="obN">Indulás 🌙</button>`;
+    h += `</div>`; ob.innerHTML = h;
+    $$('#onboard [data-r]').forEach(b=>b.addEventListener('click',()=>{ route=b.dataset.r; draw(); }));
+    $('#obN').addEventListener('click',()=>{
+      if(st===1){ name=$('#obName').value.trim(); }
+      if(st===2 && !route) return toast('Válassz egy területet.');
+      if(st<3){ st++; return draw(); }
+      Object.assign(S.profile,{name, route, onboarded:true, start:dKey()}); save();
+      ob.classList.add('hide'); showApp(); setTimeout(()=>openWizard(),400);
+    });
+  };
+  draw();
+}
+
+/* ---------- Zárolás ---------- */
+function sha256js(str){
+  const bytes = new TextEncoder().encode(str), K = [], H = [1779033703,-1150833019,1013904242,-1521486534,1359893119,-1694144372,528734635,1541459225];
+  let n = 2; for(let c=0;c<64;n++){ let p=true; for(let d=2;d*d<=n;d++) if(n%d===0){p=false;break;} if(p) K[c++] = (Math.pow(n,1/3)%1)*4294967296|0; }
+  const l = bytes.length, words = new Array(((l+9+63)>>6)<<4).fill(0);
+  for(let i=0;i<l;i++) words[i>>2] |= bytes[i] << (24-(i%4)*8);
+  words[l>>2] |= 0x80 << (24-(l%4)*8); words[words.length-1] = l*8;
+  const r = (x,y) => (x>>>y)|(x<<(32-y));
+  for(let j=0;j<words.length;j+=16){
+    const w = words.slice(j,j+16); let [a,b,c,d,e,f,g,h] = H;
+    for(let i=0;i<64;i++){
+      if(i>=16){ const x=w[i-15], y=w[i-2]; w[i] = (w[i-16] + (r(x,7)^r(x,18)^(x>>>3)) + w[i-7] + (r(y,17)^r(y,19)^(y>>>10)))|0; }
+      const t1 = (h + (r(e,6)^r(e,11)^r(e,25)) + ((e&f)^(~e&g)) + K[i] + w[i])|0, t2 = ((r(a,2)^r(a,13)^r(a,22)) + ((a&b)^(a&c)^(b&c)))|0;
+      h=g; g=f; f=e; e=(d+t1)|0; d=c; c=b; b=a; a=(t1+t2)|0;
+    }
+    H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+  }
+  return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('');
+}
+async function sha(s){
+  try{ if(window.crypto && crypto.subtle){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); } }catch(e){}
+  return sha256js(s);
+}
+const norm = (n,c) => `${n.normalize('NFC').trim().toLowerCase().replace(/\s+/g,' ')}::${c.normalize('NFC').replace(/\s+/g,'').toUpperCase()}::${CONFIG.SALT}`;
+async function checkLock(){
+  if(!CONFIG.LOCK_ENABLED) return true;
+  const t = LS.get('th_token');
+  return !!(t && CONFIG.BH_VALID_HASHES.includes(t));
+}
+function showLock(){
+  $('#lock').style.display='grid'; $('#lockMoon').innerHTML = moonSVG(moon().age, 96);
+  const go2 = async () => {
+    const n=$('#lkName').value, c=$('#lkCode').value; if(!n.trim()||!c.trim()){ $('#lkErr').textContent='Add meg a keresztneved és a kódot.'; return; }
+    try{ const h = await sha(norm(n,c)); if(CONFIG.BH_VALID_HASHES.includes(h)){ LS.set('th_token', h); if(!S.profile.name){ S.profile.name = n.trim(); save(); } $('#lock').style.display='none'; boot(true); } else { $('#lkErr').textContent='A név vagy a kód eltér attól, amit kaptál. Ellenőrizd a betűket (a kis- és nagybetű mindegy).'; } }
+    catch(e){ $('#lkErr').textContent='Hiba történt a belépésnél: ' + (e && e.message || e); }
+  };
+  $('#lkBtn').onclick = go2; $('#lkCode').onkeydown = e => { if(e.key==='Enter') go2(); };
+}
+
+/* ---------- Hash-generátor (admin): index.html?hashgen ---------- */
+function hashGen(){
+  document.body.innerHTML = `<div class="ob"><h2>Kód-generátor</h2><p class="small">Csak adminnak. Az eredményt a CONFIG.BH_VALID_HASHES listába kell tenni.</p><label>Keresztnév</label><input id="hgN"><label>Kód</label><input id="hgC"><button class="btn block" id="hgB" style="margin-top:1rem">Hash készítése</button><textarea id="hgO" style="margin-top:1rem" readonly></textarea></div>`;
+  $('#hgB').onclick = async () => { $('#hgO').value = `'${await sha(norm($('#hgN').value, $('#hgC').value))}',`; };
+}
+
+/* ---------- indítás ---------- */
+function showApp(){ $('#app').style.display='block'; $('#tabs').classList.remove('hide'); render(); }
+async function boot(unlocked){
+  applyFs(S.settings.fs); TTS.init();
+  if(!unlocked && !(await checkLock())){ showLock(); return; }
+  if(!S.profile.onboarded) return onboarding();
+  showApp();
+}
+$$('#tabs button').forEach(b => b.addEventListener('click', () => go(b.dataset.tab)));
+document.addEventListener('visibilitychange', () => { if(!document.hidden && $('#app').style.display==='block' && !$('#sheet').classList.contains('open')) render(); });
+if(location.search.includes('hashgen')) hashGen(); else boot();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
