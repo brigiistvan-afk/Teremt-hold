@@ -1,6 +1,6 @@
 // Teremtő Hold – service worker
 // Az index.html mindig a hálózatról jön (friss verzió), offline esetén a gyorsítótárból.
-const CACHE = 'teremto-hold-v2';
+const CACHE = 'teremto-hold-v6';
 const ASSETS = ['manifest.json', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
