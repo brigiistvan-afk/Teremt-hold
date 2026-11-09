@@ -305,6 +305,14 @@ textarea.auto{min-height:58px;overflow:hidden;resize:none;line-height:1.45}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 6px rgba(226,115,90,.25),0 10px 26px rgba(0,0,0,.4)}50%{box-shadow:0 0 0 18px rgba(226,115,90,.08),0 10px 26px rgba(0,0,0,.4)}}
 .btn:disabled{opacity:.35}
 #toast{background:rgba(16,44,52,.96);border:0;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+
+/* belépő képernyő: görgethető, kis kijelzőn és beépített böngészőben is */
+#lock{place-items:start center;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(var(--safe-t) + 1rem) 1.1rem calc(2rem + var(--safe-b) + var(--kb,0px))}
+#lock .box{margin:auto 0;padding-bottom:1rem}
+#lock h1{font-size:2rem;margin-bottom:.2rem}
+#lock .box > p.muted{margin:.2rem 0 .9rem;font-size:.95rem;text-shadow:0 1px 8px rgba(0,0,0,.85)}
+#lockMoon svg{width:64px;height:64px}
+@media (max-height:700px){#lockMoon{display:none!important}#lock h1{font-size:1.7rem}}
 </style>
 </head>
 <body>
@@ -318,9 +326,9 @@ textarea.auto{min-height:58px;overflow:hidden;resize:none;line-height:1.45}
     <p class="muted">A csendből a szándékon át a lépésig – a hold ritmusában.</p>
     <div class="card gold">
       <label for="lkName" style="margin-top:0">Keresztneved</label>
-      <input id="lkName" autocomplete="given-name" autocorrect="off" spellcheck="false" placeholder="pl. Anna">
+      <input id="lkName" enterkeyhint="next" autocomplete="given-name" autocorrect="off" spellcheck="false" placeholder="pl. Anna">
       <label for="lkCode">Hozzáférési kód</label>
-      <input id="lkCode" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="characters" placeholder="A vásárláskor kapott kód">
+      <input id="lkCode" enterkeyhint="go" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="characters" placeholder="A vásárláskor kapott kód">
       <div class="err" id="lkErr"></div>
       <button class="btn block" id="lkBtn" style="margin-top:.6rem">Belépés</button>
       <p class="small" style="margin-top:.9rem;text-align:center">Az appot az <span class="gold">aranyhold.hu</span> oldalon tudod megvásárolni.</p>
@@ -1924,6 +1932,8 @@ function showLock(){
     catch(e){ $('#lkErr').textContent='Hiba történt a belépésnél: ' + (e && e.message || e); }
   };
   $('#lkBtn').onclick = go2; $('#lkCode').onkeydown = e => { if(e.key==='Enter') go2(); };
+  $('#lkName').onkeydown = e => { if(e.key==='Enter'){ e.preventDefault(); $('#lkCode').focus(); } };
+  $('#lkCode').addEventListener('focus', () => setTimeout(() => { try{ $('#lkBtn').scrollIntoView({block:'end', behavior:'smooth'}); }catch(x){} }, 350));
 }
 
 /* ---------- Hash-generátor (admin): index.html?hashgen ---------- */
